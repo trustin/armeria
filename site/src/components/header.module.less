@@ -1,0 +1,40 @@
+@import '../../node_modules/antd/es/style/themes/default.less';
+
+.wrapper {
+  position: relative;
+  z-index: @zindex-back-top - 1;
+  background: @layout-header-background;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+
+  @media (max-width: @screen-sm-max) {
+    max-width: calc(100% - 0.5rem);
+  }
+
+  @media (min-width: @screen-md-min) {
+    width: @screen-xl;
+    max-width: 100%;
+  }
+}
+
+.logo {
+  flex-grow: 0;
+  height: @layout-header-height;
+  margin-right: 1rem;
+}
+
+.menu {
+  flex-grow: 1;
+  line-height: @layout-header-height;
+  text-align: right;
+  overflow: hidden;
+  background-color: @armeria-darkgray;
+}
+
+:global(.ant-menu) {
+  background-color: @armeria-darkgray !important;
+}

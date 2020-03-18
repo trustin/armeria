@@ -1,0 +1,72 @@
+@import '../../node_modules/antd/es/style/themes/default.less';
+@import '../../node_modules/antd/es/button/style/mixin.less';
+
+.footerWrapper {
+  position: relative;
+  z-index: @zindex-back-top - 1;
+  width: 100%;
+  background-color: @layout-footer-background;
+  padding: 0 1.5rem;
+
+  :global(.ant-typography), div {
+    color: @text-color-dark;
+  }
+
+  .footer {
+    display: flex;
+    background-image: inherit;
+    justify-content: space-between;
+    align-items: flex-end;
+    max-width: 100%;
+    margin: 0 auto;
+
+    @media (max-width: @screen-sm-max) {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    @media (min-width: @screen-md-min) {
+      width: @screen-xl;
+    }
+
+    .newsletterForm {
+      text-align: left;
+      flex-grow: 1;
+      max-width: 100%;
+
+      :global(.ant-typography) {
+        margin: 0;
+      }
+
+      :global(.ant-input-group-wrapper) {
+        width: 15rem;
+        max-width: 100%;
+
+        :global(.ant-btn) {
+          .btn-default;
+        }
+      }
+    }
+
+    .copyright {
+      text-align: right;
+      flex-grow: 1;
+      width: 100%;
+
+      display: flex;
+      align-items: flex-end;
+
+      // Copyright
+      div:first-child {
+        flex-grow: 1;
+        margin-right: 8px;
+      }
+      // Logo
+      div:last-child {
+        position: relative;
+        top: 5px;
+      }
+    }
+  }
+}

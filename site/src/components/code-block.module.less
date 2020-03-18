@@ -1,0 +1,32 @@
+@import '../../node_modules/antd/es/style/themes/default.less';
+
+.wrapper {
+  position: relative;
+
+  > pre {
+    background-color: @armeria-darkgray;
+    border-radius: @border-radius-base * 4 !important;
+    line-height: 1.15;
+
+    > code {
+      font-size: 87.5%;
+      font-family: @code-family;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+.clipboardButton {
+  @clipboard-button-bg: fade(@armeria-darkgray, 80%);
+
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: @btn-default-ghost-color;
+  background-color: @clipboard-button-bg;
+
+  &:active, &:hover {
+    background-color: @clipboard-button-bg;
+  }
+}

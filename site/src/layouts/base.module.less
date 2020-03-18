@@ -1,0 +1,33 @@
+@import '../../node_modules/antd/es/style/themes/default.less';
+@import '../../node_modules/antd/es/button/style/mixin.less';
+
+.layout {
+  min-height: 100vh;
+}
+
+.githubCorners {
+  display: none;
+  @media (min-width: @screen-xl-min + 128px) {
+    display: inline;
+  }
+}
+
+.cookieConsentButton {
+  .btn;
+
+  @media (max-width: @screen-sm-max) {
+    margin: 0 16px 16px 16px;
+  }
+
+  @media (min-width: @screen-md-min) {
+    margin: 0 8px 0 0;
+  }
+}
+
+.cookieConsentAcceptButton:extend(.cookieConsentButton) {
+  .btn-default;
+}
+
+.cookieConsentDeclineButton:extend(.cookieConsentButton) {
+  .button-variant-other(@text-color-dark, transparent, @border-color-base);
+}

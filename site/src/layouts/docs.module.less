@@ -1,0 +1,104 @@
+@import '../../node_modules/antd/es/style/themes/default.less';
+
+@sider-width: 256px;
+@sider-wrapper-width: @sider-width + @margin-md * 2;
+@sider-height: 100vh;
+@min-content-height: calc(
+  100vh - @layout-header-height - /* footer height */ 112px - @margin-md * 2
+);
+
+.wrapper {
+  width: 100%;
+
+  .toc {
+    padding: 16px;
+
+    .tocTree {
+      @media (max-width: @screen-sm-max) {
+        padding-top: @padding-xs;
+      }
+
+      @media (min-width: @screen-md-min) {
+        padding-top: @padding-md;
+        margin-left: -16px;
+      }
+
+      :global(.ant-tree-indent-unit) {
+        width: 0;
+        &:first-child {
+          width: 12px;
+        }
+      }
+
+      .tocDepth1 {
+        font-weight: bold;
+      }
+
+      .tocDepth2 {
+        font-size: @font-size-base - 1.5px;
+        font-weight: bold;
+      }
+
+      .tocDepth3,
+      .tocDepth4,
+      .tocDepth5,
+      .tocDepth6 {
+        font-size: @font-size-base - 4px;
+      }
+
+      .tocDepth4,
+      .tocDepth5,
+      .tocDepth6 {
+        color: @text-color-secondary;
+      }
+    }
+  }
+
+  .content {
+    padding: 24px 32px;
+    background: white;
+
+    :global(.anchor) {
+      margin-left: -16px - @margin-xs;
+      margin-right: @margin-xs;
+      opacity: 0.4;
+
+      transition-property: opacity;
+      transition-duration: 0.3s;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .footer {
+      height: 7rem;
+
+      .editOnGitHub {
+        text-align: right;
+      }
+
+      .prevButton {
+        float: left;
+      }
+
+      .nextButton {
+        float: right;
+      }
+    }
+
+    :global(.remark-draw) {
+      display: block;
+      text-align: center;
+      margin: 1rem 0;
+      max-width: 100%;
+      overflow: auto;
+
+      img {
+        width: auto;
+        max-width: auto;
+        max-width: 100%;
+      }
+    }
+  }
+}
