@@ -20,7 +20,7 @@
 
       @media (min-width: @screen-md-min) {
         padding-top: @padding-md;
-        margin-left: -16px;
+        margin-left: -@margin-md;
       }
 
       :global(.ant-tree-indent-unit) {
@@ -28,6 +28,15 @@
         &:first-child {
           width: 12px;
         }
+      }
+
+      :global(.ant-tree-switcher) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: @font-size-base + 5px;
+        padding-left: 5px;
+        padding-top: 1px;
       }
 
       .tocDepth1 {

@@ -1,5 +1,6 @@
 import {
   CloseOutlined,
+  DownOutlined,
   GithubOutlined,
   LeftOutlined,
   RightOutlined,
@@ -395,6 +396,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
                 multiple
                 onClick={onClick}
                 onExpand={onExpand}
+                switcherIcon={<DownOutlined />}
               />
             </StickyBox>
           </div>
