@@ -251,7 +251,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
       setSelectedItemKeys([item.key]);
 
       // Scroll down to the anchor.
-      jumpToHash(item.hash);
+      jumpToHash(item.hash, true);
     }
   }
 

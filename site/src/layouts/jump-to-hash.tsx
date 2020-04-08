@@ -1,4 +1,4 @@
-export default (hash: string) => {
+export default (hash: string, force?: boolean) => {
   if (!hash || !hash.startsWith('#')) {
     return;
   }
@@ -17,7 +17,7 @@ export default (hash: string) => {
     }
 
     // Scroll to the target element.
-    if (window.scrollY === 0) {
+    if (window.scrollY === 0 || force) {
       window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
     }
 
