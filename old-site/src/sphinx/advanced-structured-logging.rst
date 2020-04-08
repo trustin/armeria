@@ -232,7 +232,7 @@ request and response properties, you need to use :api:`ClientConnectionTimings` 
 
 .. _content-previewing:
 
-Enabling content previews
+enabling content previews
 -------------------------
 Armeria provides the ``requestContentPreview`` and ``responseContentPreview`` properties in :api:`RequestLog`
 to retrieve the textual representation of the first N bytes of the request and response content.
