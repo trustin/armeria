@@ -251,7 +251,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
       setSelectedItemKeys([item.key]);
 
       // Scroll down to the anchor.
-      jumpToHash(item.hash, true);
+      jumpToHash(item.hash);
     }
   }
 
@@ -285,7 +285,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   }
 
   // Style functions for responsive table of contents.
-  const [viewportWidth, setViewportWidth] = React.useState(0);
+  const [viewportWidth, setViewportWidth] = React.useState(window.innerWidth);
   React.useLayoutEffect(() => {
     function updateViewportWidth() {
       setViewportWidth(window.innerWidth);
