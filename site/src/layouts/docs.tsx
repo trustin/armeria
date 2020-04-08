@@ -286,15 +286,25 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   }
 
   // Style functions for responsive table of contents.
-  const [viewportWidth, setViewportWidth] = React.useState(window.innerWidth);
+  const [viewportWidth, setViewportWidth] = React.useState(
+    actualViewportWidth(),
+  );
   React.useLayoutEffect(() => {
     function updateViewportWidth() {
-      setViewportWidth(window.innerWidth);
+      setViewportWidth(actualViewportWidth());
+    }
+    updateViewportWidth();
+
+    if (typeof window === 'undefined') {
+      return () => {};
     }
     window.addEventListener('resize', updateViewportWidth);
-    updateViewportWidth();
     return () => window.removeEventListener('resize', updateViewportWidth);
   }, []);
+
+  function actualViewportWidth() {
+    return typeof window !== 'undefined' ? window.innerWidth : 1200;
+  }
 
   function wrapperStyle(): React.CSSProperties {
     if (isLargeDisplay()) {
