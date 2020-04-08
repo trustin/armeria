@@ -18,7 +18,7 @@
       .toc {
         max-height: 100vh;
         overflow: auto;
-        padding: 1rem;
+        padding: @padding-md;
         background: white;
 
         // Use thinner scrollbar for ToC overflow.
@@ -36,11 +36,9 @@
           padding-top: @padding-xs;
           width: calc(100% + @margin-md);
 
+          @indent-unit: 12px;
           :global(.ant-tree-indent-unit) {
-            width: 0;
-            &:first-child {
-              width: 12px;
-            }
+            width: @indent-unit;
           }
 
           :global(.ant-tree-switcher) {
@@ -52,26 +50,53 @@
             padding-top: 1px;
           }
 
+          :global(.ant-tree-switcher),
+          :global(.ant-tree-node-content-wrapper) {
+            min-height: 0;
+            height: 1.5715em;
+            line-height: 1.5715em;
+          }
+
+          .tocDepth1,
+          .tocDepth2,
+          .tocDepth3,
+          .tocDepth4 {
+            line-height: 100%;
+            :global(.ant-tree-title) {
+              white-space: nowrap;
+              display: inline-block;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
           .tocDepth1 {
             font-weight: bold;
+            :global(.ant-tree-title) {
+              width: 256px - @padding-md * 2;
+            }
           }
 
           .tocDepth2 {
-            font-size: @font-size-base - 1.5px;
-            font-weight: bold;
+            font-size: @font-size-sm;
+            :global(.ant-tree-title) {
+              width: 256px - @padding-md * 2 - @indent-unit;
+            }
           }
 
-          .tocDepth3,
-          .tocDepth4,
-          .tocDepth5,
-          .tocDepth6 {
-            font-size: @font-size-base - 4px;
+          .tocDepth3 {
+            font-size: @font-size-sm - 2px;
+            :global(.ant-tree-title) {
+              width: 256px - @padding-md * 2 - @indent-unit * 2;
+            }
           }
 
-          .tocDepth4,
-          .tocDepth5,
-          .tocDepth6 {
+          .tocDepth4 {
+            font-size: @font-size-sm - 2px;
             color: @text-color-secondary;
+            :global(.ant-tree-title) {
+              width: 256px - @padding-md * 2 - @indent-unit * 3;
+            }
           }
         }
       }

@@ -205,9 +205,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     currentItem.key,
   ]);
   const [expandedItemKeys, setExpandedItemKeys] = React.useState(
-    // Expand all items initially.
-    // Pass [currentItem] to expand only the current item.
-    initialExpandedItemKeys(items),
+    initialExpandedItemKeys([...items, currentItem]),
   );
   const [autoExpandParent, setAutoExpandParent] = React.useState(true);
 
@@ -566,20 +564,22 @@ function findCurrentItem(
   return bestMatch || items[0];
 }
 
-function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
-  const firstCall = result === undefined;
+function initialExpandedItemKeys(
+  items: ToCItem[],
+  depth?: number,
+  result?: string[],
+) {
+  const currentDepth = depth || 0;
   const collected = result || [];
 
-  const maxNumExpandedItems = Number.MAX_SAFE_INTEGER;
+  if (currentDepth >= 1) {
+    return collected;
+  }
 
   items.forEach(item => {
-    // Expand up to 2 items so that a visitor is not overwhelmed.
-    if (
-      collected.length < maxNumExpandedItems &&
-      (firstCall || item.children.length > 0)
-    ) {
+    if (currentDepth === 0 || item.children.length > 0) {
       collected.push(item.key);
-      initialExpandedItemKeys(item.children, collected);
+      initialExpandedItemKeys(item.children, currentDepth + 1, collected);
     }
   });
 
@@ -589,9 +589,8 @@ function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
 function findExpandedItemKeys(searchText: string, items: ToCItem[]): string[] {
   return items.flatMap(item => {
     if (item.title.toLowerCase().indexOf(searchText) >= 0) {
-      return [item.key];
+      return [item.key, ...findExpandedItemKeys(searchText, item.children)];
     }
-    // Search recursively.
     return findExpandedItemKeys(searchText, item.children);
   });
 }
