@@ -1,4 +1,5 @@
 const path = require('path');
+const remarkGridTablesPlugin = require('remark-grid-tables');
 
 module.exports = {
   siteMetadata: {
@@ -55,6 +56,7 @@ module.exports = {
           default: path.resolve(__dirname, 'src', 'layouts', 'base.tsx'),
           docs: path.resolve(__dirname, 'src', 'layouts', 'docs.tsx'),
         },
+        remarkPlugins: [remarkGridTablesPlugin],
         gatsbyRemarkPlugins: [
           'gatsby-remark-autolink-headers',
           {
