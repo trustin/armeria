@@ -205,7 +205,9 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     currentItem.key,
   ]);
   const [expandedItemKeys, setExpandedItemKeys] = React.useState(
-    initialExpandedItemKeys([...items, currentItem]),
+    // Expand all items initially.
+    // Pass [currentItem] to expand only the current item.
+    initialExpandedItemKeys(items),
   );
   const [autoExpandParent, setAutoExpandParent] = React.useState(true);
 
@@ -577,22 +579,14 @@ function findCurrentItem(
   return bestMatch || items[0];
 }
 
-function initialExpandedItemKeys(
-  items: ToCItem[],
-  depth?: number,
-  result?: string[],
-) {
-  const currentDepth = depth || 0;
+function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
+  const firstCall = result === undefined;
   const collected = result || [];
 
-  if (currentDepth >= 1) {
-    return collected;
-  }
-
   items.forEach(item => {
-    if (currentDepth === 0 || item.children.length > 0) {
+    if (firstCall || item.children.length > 0) {
       collected.push(item.key);
-      initialExpandedItemKeys(item.children, currentDepth + 1, collected);
+      initialExpandedItemKeys(item.children, collected);
     }
   });
 
