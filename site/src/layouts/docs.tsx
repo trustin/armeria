@@ -287,135 +287,27 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     }
   }
 
-  // Style functions for responsive table of contents.
-  const [viewportWidth, setViewportWidth] = React.useState(
-    actualViewportWidth(),
-  );
-  React.useLayoutEffect(() => {
-    function updateViewportWidth() {
-      setViewportWidth(actualViewportWidth());
-    }
-    updateViewportWidth();
-
-    if (typeof window === 'undefined') {
-      return () => {};
-    }
-    window.addEventListener('resize', updateViewportWidth);
-    return () => window.removeEventListener('resize', updateViewportWidth);
-  }, []);
-
-  function actualViewportWidth() {
-    return typeof window !== 'undefined' ? window.innerWidth : 1200;
-  }
-
-  function wrapperStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        display: 'flex',
-        alignItems: 'stretch',
-        margin: '16px auto',
-        maxWidth: '1200px',
-      };
-    }
-
-    return {
-      position: 'relative',
-    };
-  }
-
-  function tocButtonStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        display: 'none',
-      };
-    }
-
-    return {
-      position: 'absolute',
-      zIndex: 200,
-      top: 0,
-      right: 0,
-      left: 'calc(100% - 80px)',
-      bottom: 0,
-      margin: '16px',
-      textAlign: 'right',
-    };
-  }
-
+  // Style functions for fading in/out table of contents.
   function tocWrapperStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        flexBasis: '256px',
-        flexGrow: 0,
-        flexShrink: 0,
-        background: 'white',
-      };
-    }
-
-    const style: React.CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      left: 0,
-      bottom: 0,
-      zIndex: 100,
-      transitionProperty: 'opacity',
-      transitionDuration: `${tocAnimationDurationMillis}ms`,
-    };
-
     switch (tocState) {
       case ToCState.OPENING:
-        style.display = '';
-        style.opacity = 0;
-        break;
+        return {
+          display: 'block',
+          opacity: 0,
+        };
       case ToCState.OPEN:
-        style.display = '';
-        style.opacity = 1;
-        break;
+        return {
+          display: 'block',
+          opacity: 1,
+        };
       case ToCState.CLOSING:
-        style.display = '';
-        style.opacity = 0;
-        break;
+        return {
+          display: 'block',
+          opacity: 0,
+        };
       default:
-        style.display = 'none';
-        style.opacity = 0;
-        break;
+        return {};
     }
-    return style;
-  }
-
-  function tocShadowStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {};
-    }
-
-    return {
-      // From @box-shadow-base:
-      boxShadow:
-        '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-    };
-  }
-
-  function contentStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      const tocPanelWidth = 256 + 16;
-      return {
-        flexGrow: 1,
-        marginLeft: '16px',
-        width: viewportWidth >= 1200 ? `${1200 - tocPanelWidth}px` : undefined,
-        maxWidth:
-          viewportWidth >= 1200
-            ? `${1200 - tocPanelWidth}px`
-            : `calc(100vw - ${tocPanelWidth}px)`,
-        minHeight: 'calc(100vh - 64px - 112px - 32px)',
-      };
-    }
-
-    return {};
-  }
-
-  function isLargeDisplay() {
-    return viewportWidth >= 768;
   }
 
   return (
@@ -425,8 +317,8 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
         history={props.history}
         location={props.location}
       >
-        <div className={styles.wrapper} style={wrapperStyle()}>
-          <div className={styles.tocButton} style={tocButtonStyle()}>
+        <div className={styles.wrapper}>
+          <div className={styles.tocButton}>
             <StickyBox offsetTop={16} offsetBottom={16}>
               <Button onClick={toggleToC}>
                 {tocState === ToCState.OPEN ? (
@@ -442,7 +334,11 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
             style={tocWrapperStyle()}
             role="directory"
           >
-            <StickyBox offsetTop={0} offsetBottom={16} style={tocShadowStyle()}>
+            <StickyBox
+              offsetTop={0}
+              offsetBottom={16}
+              className={styles.tocShadow}
+            >
               <div className={styles.tocInnerWrapper}>
                 <div className={styles.toc}>
                   <Search
@@ -465,7 +361,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
               </div>
             </StickyBox>
           </div>
-          <div className={styles.content} style={contentStyle()}>
+          <div className={styles.content}>
             <Content className="ant-typography" role="main">
               {props.children}
               <div className={styles.footer}>

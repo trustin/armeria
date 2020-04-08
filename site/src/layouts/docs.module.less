@@ -10,92 +10,148 @@
 .wrapper {
   width: 100%;
 
+  @media (max-width: @screen-sm-max) {
+    position: relative;
+  }
+
+  @media (min-width: @screen-md-min) {
+    display: flex;
+    align-items: stretch;
+    margin: 16px auto;
+    max-width: @screen-xl;
+  }
+
+  .tocButton {
+    @media (max-width: @screen-sm-max) {
+      position: absolute;
+      z-index: 200;
+      top: 0;
+      right: 0;
+      left: calc(100% - 80px);
+      bottom: 0;
+      margin: @margin-md;
+      text-align: right;
+    }
+
+    @media (min-width: @screen-md-min) {
+      display: none;
+    }
+  }
+
   .tocWrapper {
-    .tocInnerWrapper {
-      width: 100%;
-      overflow: hidden;
+    @media (max-width: @screen-sm-max) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition-property: opacity;
+      transition-duration: 0.3s;
 
-      .toc {
-        max-height: 100vh;
-        overflow: auto;
-        padding: @padding-md;
-        background: white;
+      // These two properties are overridden dynamically.
+      display: none;
+      opacity: 0;
+    }
 
-        // Use thinner scrollbar for ToC overflow.
-        scrollbar-width: thin;
-        -ms-overflow-style: -ms-autohiding-scrollbar;
-        &::-webkit-scrollbar {
-          width: 2px;
-        }
-        &::-webkit-scrollbar-thumb {
-          background-color: @border-color-base;
-        }
+    @media (min-width: @screen-md-min) {
+      flex-basis: @sider-width;
+      flex-grow: 0;
+      flex-shrink: 0;
+      background: white;
+    }
 
-        .tocTree {
-          margin-left: -@margin-md;
-          padding-top: @padding-xs;
-          width: calc(100% + @margin-md);
+    .tocShadow {
+      @media (max-width: @screen-sm-max) {
+        box-shadow: @box-shadow-base;
+      }
 
-          @indent-unit: 12px;
-          :global(.ant-tree-indent-unit) {
-            width: @indent-unit;
+      .tocInnerWrapper {
+        width: 100%;
+        overflow: hidden;
+
+        .toc {
+          max-height: 100vh;
+          overflow: auto;
+          padding: @padding-md;
+          background: white;
+
+          // Use thinner scrollbar for ToC overflow.
+          scrollbar-width: thin;
+          -ms-overflow-style: -ms-autohiding-scrollbar;
+          &::-webkit-scrollbar {
+            width: 2px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background-color: @border-color-base;
           }
 
-          :global(.ant-tree-switcher) {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: @font-size-base + 5px;
-            padding-left: 5px;
-            padding-top: 1px;
-          }
+          .tocTree {
+            margin-left: -@margin-md;
+            padding-top: @padding-xs;
+            width: calc(100% + @margin-md);
 
-          :global(.ant-tree-switcher),
-          :global(.ant-tree-node-content-wrapper) {
-            min-height: 0;
-            height: 1.5715em;
-            line-height: 1.5715em;
-          }
-
-          .tocDepth1,
-          .tocDepth2,
-          .tocDepth3,
-          .tocDepth4 {
-            line-height: 100%;
-            :global(.ant-tree-title) {
-              white-space: nowrap;
-              display: inline-block;
-              overflow: hidden;
-              text-overflow: ellipsis;
+            @indent-unit: 12px;
+            :global(.ant-tree-indent-unit) {
+              width: @indent-unit;
             }
-          }
 
-          .tocDepth1 {
-            font-weight: bold;
-            :global(.ant-tree-title) {
-              width: 256px - @padding-md * 2;
+            :global(.ant-tree-switcher) {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: @font-size-base + 5px;
+              padding-left: 5px;
+              padding-top: 1px;
             }
-          }
 
-          .tocDepth2 {
-            font-size: @font-size-sm;
-            :global(.ant-tree-title) {
-              width: 256px - @padding-md * 2 - @indent-unit;
+            :global(.ant-tree-switcher),
+            :global(.ant-tree-node-content-wrapper) {
+              min-height: 0;
+              height: 1.5715em;
+              line-height: 1.5715em;
             }
-          }
 
-          .tocDepth3 {
-            font-size: @font-size-sm - 2px;
-            :global(.ant-tree-title) {
-              width: 256px - @padding-md * 2 - @indent-unit * 2;
+            .tocDepth1,
+            .tocDepth2,
+            .tocDepth3,
+            .tocDepth4 {
+              line-height: 100%;
+              :global(.ant-tree-title) {
+                white-space: nowrap;
+                display: inline-block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
             }
-          }
 
-          .tocDepth4 {
-            font-size: @font-size-sm - 2px;
-            color: @text-color-secondary;
-            :global(.ant-tree-title) {
-              width: 256px - @padding-md * 2 - @indent-unit * 3;
+            .tocDepth1 {
+              font-weight: bold;
+              :global(.ant-tree-title) {
+                width: 256px - @padding-md * 2;
+              }
+            }
+
+            .tocDepth2 {
+              font-size: @font-size-sm;
+              :global(.ant-tree-title) {
+                width: 256px - @padding-md * 2 - @indent-unit;
+              }
+            }
+
+            .tocDepth3 {
+              font-size: @font-size-sm - 2px;
+              :global(.ant-tree-title) {
+                width: 256px - @padding-md * 2 - @indent-unit * 2;
+              }
+            }
+
+            .tocDepth4 {
+              font-size: @font-size-sm - 2px;
+              color: @text-color-secondary;
+              :global(.ant-tree-title) {
+                width: 256px - @padding-md * 2 - @indent-unit * 3;
+              }
             }
           }
         }
@@ -106,6 +162,18 @@
   .content {
     padding: 24px 32px;
     background: white;
+
+    @media (min-width: @screen-md-min) {
+      flex-grow: 1;
+      margin-left: @margin-md;
+      max-width: calc(100vw - @sider-width - @margin-md);
+      min-height: calc(100vh - @layout-header-height - 112px - @margin-md * 2);
+    }
+
+    @media (min-width: @screen-xl-min) {
+      width: @screen-xl-min - @sider-width - @margin-md;
+      max-width: @screen-xl-min - @sider-width - @margin-md;
+    }
 
     :global(.anchor) {
       margin-left: -16px - @margin-xs;
