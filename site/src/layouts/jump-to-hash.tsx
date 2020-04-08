@@ -17,7 +17,9 @@ export default (hash: string) => {
     }
 
     // Scroll to the target element.
-    window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
+    if (window.scrollY === 0) {
+      window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
+    }
 
     // Update the history.
     if (window.location.hash !== hash) {
