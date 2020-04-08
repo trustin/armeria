@@ -125,6 +125,14 @@
       margin-bottom: 1rem;
     }
 
+    :global(.ant-table) {
+      overflow: auto;
+      max-width: 100%;
+      table {
+        table-layout: auto;
+      }
+    }
+
     :global(.ant-alert) {
       padding-top: @padding-sm;
       padding-bottom: @padding-sm;

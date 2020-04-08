@@ -106,7 +106,7 @@ const mdxComponents: any = {
     return (
       <div className="ant-table ant-table-bordered ant-table-small">
         <div className="ant-table-content">
-          <table {...props} style={{ tableLayout: 'auto' }} />
+          <table {...props} />
         </div>
       </div>
     );
