@@ -95,24 +95,38 @@
       }
     }
 
-    :global(.ant-alert) {
+    :global(.ant-alert),
+    :global(.ant-table) {
       margin-bottom: 1rem;
+    }
+
+    :global(.ant-alert) {
       padding-top: @padding-sm;
       padding-bottom: @padding-sm;
 
       > :global(.ant-alert-icon) {
         padding-top: @padding-xss;
       }
+    }
 
-      > :global(.ant-alert-message) {
+    :global(.ant-alert-message),
+    :global(.ant-table) th,
+    :global(.ant-table) td {
+      > :last-child {
+        margin-bottom: 0;
+
         > :last-child {
           margin-bottom: 0;
-
-          > :last-child {
-            margin-bottom: 0;
-          }
         }
       }
+    }
+
+    :global(.ant-table) thead th {
+      font-weight: bold;
+    }
+    :global(.ant-table) th,
+    :global(.ant-table) td {
+      vertical-align: top;
     }
 
     .footer {

@@ -14,6 +14,8 @@ import { OutboundLink } from 'gatsby-plugin-google-analytics';
 import React from 'react';
 import StickyBox from 'react-sticky-box';
 
+import 'antd/es/table/style';
+
 import { Tip, Warning } from '../components/alert';
 import { TypeLink } from '../components/api-link';
 import CodeBlock from '../components/code-block';
@@ -100,31 +102,52 @@ const mdxComponents: any = {
       <CodeBlock language={language}>{props.children.props.children}</CodeBlock>
     );
   },
+  table: (props: any) => {
+    return (
+      <div className="ant-table ant-table-bordered ant-table-small">
+        <div className="ant-table-content">
+          <table {...props} style={{ tableLayout: 'auto' }} />
+        </div>
+      </div>
+    );
+  },
+  thead: (props: any) => {
+    return <thead className="ant-table-thead" {...props} />;
+  },
+  tbody: (props: any) => {
+    return <tbody className="ant-table-tbody" {...props} />;
+  },
   th: (props: any) => {
-    const newProps = {
-      ...props,
-      rowSpan: props.rowspan,
-      colSpan: props.colspan,
-    };
-    delete newProps.rowspan;
-    delete newProps.colspan;
-    return <th {...newProps} />;
+    return <th className="ant-table-cell" {...filterTableCellProps(props)} />;
   },
   td: (props: any) => {
-    const newProps = {
-      ...props,
-      rowSpan: props.rowspan,
-      colSpan: props.colspan,
-    };
-    delete newProps.rowspan;
-    delete newProps.colspan;
-    return <td {...newProps} />;
+    return <td className="ant-table-cell" {...filterTableCellProps(props)} />;
   },
   Tip,
   Warning,
   CodeBlock,
   TypeLink,
 };
+
+function filterTableCellProps(props: any) {
+  const newProps = {
+    ...props,
+    rowSpan: props.rowspan,
+    colSpan: props.colspan,
+  };
+  if (props.align) {
+    if (newProps.style) {
+      newProps.style = { ...newProps.style, textAlign: props.align };
+    } else {
+      newProps.style = { textAlign: props.align };
+    }
+  }
+
+  delete newProps.align;
+  delete newProps.rowspan;
+  delete newProps.colspan;
+  return newProps;
+}
 
 const DocsLayout: React.FC<DocsLayoutProps> = props => {
   const {
