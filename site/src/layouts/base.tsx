@@ -32,7 +32,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = props => {
   React.useEffect(() => setLoaded(true), []);
   React.useEffect(() => {
     // Jump to hash or flash at hash only when rendering in a browser.
-    if (window) {
+    if (typeof window !== 'undefined') {
       if (firstRender) {
         firstRender = false;
         jumpToHash(props.location.hash);
