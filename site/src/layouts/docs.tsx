@@ -100,6 +100,26 @@ const mdxComponents: any = {
       <CodeBlock language={language}>{props.children.props.children}</CodeBlock>
     );
   },
+  th: (props: any) => {
+    const newProps = {
+      ...props,
+      rowSpan: props.rowspan,
+      colSpan: props.colspan,
+    };
+    delete newProps.rowspan;
+    delete newProps.colspan;
+    return <th {...newProps} />;
+  },
+  td: (props: any) => {
+    const newProps = {
+      ...props,
+      rowSpan: props.rowspan,
+      colSpan: props.colspan,
+    };
+    delete newProps.rowspan;
+    delete newProps.colspan;
+    return <td {...newProps} />;
+  },
   Tip,
   Warning,
   CodeBlock,
