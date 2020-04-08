@@ -61,13 +61,33 @@
     :global(.anchor) {
       margin-left: -16px - @margin-xs;
       margin-right: @margin-xs;
-      opacity: 0.4;
+      opacity: 0.3;
 
       transition-property: opacity;
       transition-duration: 0.3s;
 
       &:hover {
         opacity: 1;
+      }
+    }
+
+    :global(.ant-alert) {
+      margin-bottom: 1rem;
+      padding-top: @padding-sm;
+      padding-bottom: @padding-sm;
+
+      > :global(.ant-alert-icon) {
+        padding-top: @padding-xss;
+      }
+
+      > :global(.ant-alert-message) {
+        > :last-child {
+          margin-bottom: 0;
+
+          > :last-child {
+            margin-bottom: 0;
+          }
+        }
       }
     }
 

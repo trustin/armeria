@@ -1,5 +1,6 @@
 import { Alert as AntdAlert } from 'antd';
 import React from 'react';
+import { InfoCircleOutlined, WarningOutlined } from '@ant-design/icons';
 
 interface AlertProps {
   type?: 'success' | 'info' | 'warning' | 'error';
@@ -20,9 +21,15 @@ const Alert: React.FC<AlertProps> = props => (
   />
 );
 
-const Tip: React.FC = ({ children }) => <Alert type="info">{children}</Alert>;
+const Tip: React.FC = ({ children }) => (
+  <Alert type="info" icon={<InfoCircleOutlined />} showIcon>
+    {children}
+  </Alert>
+);
 const Warning: React.FC = ({ children }) => (
-  <Alert type="warning">{children}</Alert>
+  <Alert type="warning" icon={<WarningOutlined />} showIcon>
+    {children}
+  </Alert>
 );
 
 export { Alert, Tip, Warning };

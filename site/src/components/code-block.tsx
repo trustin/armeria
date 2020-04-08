@@ -75,6 +75,7 @@ const newPrismTheme = Object.entries(prismTheme).reduce(
       tabSize: 2,
       background: undefined,
       textShadow: undefined,
+      margin: undefined,
     };
     return result;
   },
