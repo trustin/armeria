@@ -383,12 +383,17 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     };
   }
 
-  function contentStyle() {
+  function contentStyle(): React.CSSProperties {
     if (isLargeDisplay()) {
+      const tocPanelWidth = 256 + 16;
       return {
         flexGrow: 1,
         marginLeft: '16px',
-        maxWidth: 'calc(100vw - 256px - 16px)',
+        width: viewportWidth >= 1200 ? `${1200 - tocPanelWidth}px` : undefined,
+        maxWidth:
+          viewportWidth >= 1200
+            ? `${1200 - tocPanelWidth}px`
+            : `calc(100vw - ${tocPanelWidth}px)`,
         minHeight: 'calc(100vh - 64px - 112px - 32px)',
       };
     }
