@@ -217,13 +217,16 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
 
   function onSearch(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value.trim().toLowerCase();
-    const result =
-      searchText.length !== 0
-        ? findExpandedItemKeys(searchText, items)
-        : [currentItem.key];
     setAutoExpandParent(true);
-    setExpandedItemKeys(result);
-    setSelectedItemKeys(result);
+    if (searchText.length !== 0) {
+      const result = findExpandedItemKeys(searchText, items);
+      setExpandedItemKeys(result);
+      setSelectedItemKeys(result);
+    } else {
+      const expandedKeys = initialExpandedItemKeys([...items, currentItem]);
+      setExpandedItemKeys(expandedKeys);
+      setSelectedItemKeys([currentItem.key]);
+    }
   }
 
   function onClick(event: React.MouseEvent, treeNode: any) {
