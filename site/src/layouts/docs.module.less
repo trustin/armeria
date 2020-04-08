@@ -10,55 +10,70 @@
 .wrapper {
   width: 100%;
 
-  .toc {
-    padding: 16px;
+  .tocWrapper {
+    .tocInnerWrapper {
+      width: 100%;
+      overflow: hidden;
 
-    .tocTree {
-      @media (max-width: @screen-sm-max) {
-        padding-top: @padding-xs;
-      }
+      .toc {
+        max-height: 100vh;
+        overflow: auto;
+        padding: 1rem;
+        background: white;
 
-      @media (min-width: @screen-md-min) {
-        padding-top: @padding-md;
-        margin-left: -@margin-md;
-      }
-
-      :global(.ant-tree-indent-unit) {
-        width: 0;
-        &:first-child {
-          width: 12px;
+        // Use thinner scrollbar for ToC overflow.
+        scrollbar-width: thin;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        &::-webkit-scrollbar {
+          width: 2px;
         }
-      }
+        &::-webkit-scrollbar-thumb {
+          background-color: @border-color-base;
+        }
 
-      :global(.ant-tree-switcher) {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: @font-size-base + 5px;
-        padding-left: 5px;
-        padding-top: 1px;
-      }
+        .tocTree {
+          margin-left: -@margin-md;
+          padding-top: @padding-xs;
+          width: calc(100% + @margin-md);
 
-      .tocDepth1 {
-        font-weight: bold;
-      }
+          :global(.ant-tree-indent-unit) {
+            width: 0;
+            &:first-child {
+              width: 12px;
+            }
+          }
 
-      .tocDepth2 {
-        font-size: @font-size-base - 1.5px;
-        font-weight: bold;
-      }
+          :global(.ant-tree-switcher) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: @font-size-base + 5px;
+            padding-left: 5px;
+            padding-top: 1px;
+          }
 
-      .tocDepth3,
-      .tocDepth4,
-      .tocDepth5,
-      .tocDepth6 {
-        font-size: @font-size-base - 4px;
-      }
+          .tocDepth1 {
+            font-weight: bold;
+          }
 
-      .tocDepth4,
-      .tocDepth5,
-      .tocDepth6 {
-        color: @text-color-secondary;
+          .tocDepth2 {
+            font-size: @font-size-base - 1.5px;
+            font-weight: bold;
+          }
+
+          .tocDepth3,
+          .tocDepth4,
+          .tocDepth5,
+          .tocDepth6 {
+            font-size: @font-size-base - 4px;
+          }
+
+          .tocDepth4,
+          .tocDepth5,
+          .tocDepth6 {
+            color: @text-color-secondary;
+          }
+        }
       }
     }
   }

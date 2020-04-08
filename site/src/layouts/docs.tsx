@@ -286,7 +286,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     };
   }
 
-  function tocStyle(): React.CSSProperties {
+  function tocWrapperStyle(): React.CSSProperties {
     if (isLargeDisplay()) {
       return {
         flexBasis: '256px',
@@ -376,28 +376,32 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
               </Button>
             </StickyBox>
           </div>
-          <div className={styles.toc} style={tocStyle()} role="directory">
-            <StickyBox
-              offsetTop={16}
-              offsetBottom={16}
-              style={tocShadowStyle()}
-            >
-              <Search
-                placeholder="Search table of contents"
-                onChange={onSearch}
-                allowClear
-              />
-              <Tree
-                className={styles.tocTree}
-                treeData={items}
-                selectedKeys={selectedItemKeys}
-                expandedKeys={expandedItemKeys}
-                autoExpandParent={autoExpandParent}
-                multiple
-                onClick={onClick}
-                onExpand={onExpand}
-                switcherIcon={<DownOutlined />}
-              />
+          <div
+            className={styles.tocWrapper}
+            style={tocWrapperStyle()}
+            role="directory"
+          >
+            <StickyBox offsetTop={0} offsetBottom={16} style={tocShadowStyle()}>
+              <div className={styles.tocInnerWrapper}>
+                <div className={styles.toc}>
+                  <Search
+                    placeholder="Search table of contents"
+                    onChange={onSearch}
+                    allowClear
+                  />
+                  <Tree
+                    className={styles.tocTree}
+                    treeData={items}
+                    selectedKeys={selectedItemKeys}
+                    expandedKeys={expandedItemKeys}
+                    autoExpandParent={autoExpandParent}
+                    multiple
+                    onClick={onClick}
+                    onExpand={onExpand}
+                    switcherIcon={<DownOutlined />}
+                  />
+                </div>
+              </div>
             </StickyBox>
           </div>
           <div className={styles.content} style={contentStyle()}>
