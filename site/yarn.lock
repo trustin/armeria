@@ -14033,6 +14033,11 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
+tocbot@^4.10.1:
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/tocbot/-/tocbot-4.10.1.tgz#e1b0264dfe58431d34bf38f1298a4ff4d9dd810b"
+  integrity sha512-ej63EeK+iB3uWt9zekBWv52r7bH9hnVJIOCLwpwXPj0XeAgJFQ3NtVa252kPbSmhrGADuHpCwgcIaaIYtRr+dw==
+
 toggle-selection@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"

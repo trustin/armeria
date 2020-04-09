@@ -1,7 +1,6 @@
 @import '../../node_modules/antd/es/style/themes/default.less';
 
-@sider-width: 256px;
-@sider-wrapper-width: @sider-width + @margin-md * 2;
+@sider-width: 308px;
 @sider-height: 100vh;
 @min-content-height: calc(
   100vh - @layout-header-height - /* footer height */ 112px - @margin-md * 2
@@ -9,254 +8,283 @@
 
 .wrapper {
   width: 100%;
+  background: white;
 
+  // Use single-column layout on < 768px.
   @media (max-width: @screen-sm-max) {
     position: relative;
   }
 
+  // Use double-column layout on >= 768px.
   @media (min-width: @screen-md-min) {
     display: flex;
     align-items: stretch;
     margin: 16px auto;
     max-width: @screen-xl;
   }
+}
 
-  .tocButton {
-    @media (max-width: @screen-sm-max) {
-      position: absolute;
-      z-index: @zindex-back-top - 1;
-      top: 0;
-      right: 0;
-      left: calc(100% - 80px);
-      bottom: 0;
-      margin: @margin-md;
-      text-align: right;
-    }
+.content {
+  padding: @padding-lg @padding-xl;
+  background: white;
 
-    @media (min-width: @screen-md-min) {
-      display: none;
+  @media (min-width: @screen-md-min) {
+    flex-grow: 1;
+    max-width: calc(100vw - @sider-width);
+    min-height: calc(100vh - @layout-header-height - 112px - @margin-md * 2);
+  }
+
+  @media (min-width: @screen-xl-min) {
+    width: @screen-xl-min - @sider-width;
+    max-width: @screen-xl-min - @sider-width;
+  }
+
+  :global(.anchor) {
+    margin-left: -16px - @margin-xs;
+    margin-right: @margin-xs;
+    opacity: 0.3;
+
+    transition-property: opacity;
+    transition-duration: 0.3s;
+
+    &:hover {
+      opacity: 1;
     }
   }
 
-  .tocWrapper {
-    @media (max-width: @screen-sm-max) {
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      bottom: 0;
-      transition-property: opacity;
-      transition-duration: 0.3s;
+  :global(.ant-alert),
+  :global(.ant-table) {
+    margin-bottom: 1rem;
+  }
 
-      // These two properties are overridden dynamically.
-      display: none;
-      opacity: 0;
-    }
-
-    @media (min-width: @screen-md-min) {
-      flex-basis: @sider-width;
-      flex-grow: 0;
-      flex-shrink: 0;
-      background: white;
-    }
-
-    .tocShadow {
-      @media (max-width: @screen-sm-max) {
-        box-shadow: @box-shadow-base;
-      }
-
-      .tocInnerWrapper {
-        width: 100%;
-        overflow: hidden;
-
-        .toc {
-          max-height: 100vh;
-          overflow: auto;
-          padding: @padding-md;
-          background: white;
-
-          // Use thinner scrollbar for ToC overflow.
-          scrollbar-width: thin;
-          -ms-overflow-style: -ms-autohiding-scrollbar;
-          &::-webkit-scrollbar {
-            width: 2px;
-          }
-          &::-webkit-scrollbar-thumb {
-            background-color: @border-color-base;
-          }
-
-          .tocTree {
-            margin-left: -@margin-md;
-            padding-top: @padding-xs;
-            width: calc(100% + @margin-md);
-
-            @indent-unit: 12px;
-            :global(.ant-tree-indent-unit) {
-              width: @indent-unit;
-            }
-
-            :global(.ant-tree-switcher) {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: @font-size-base + 5px;
-              padding-left: 5px;
-              padding-top: 1px;
-            }
-
-            :global(.ant-tree-switcher),
-            :global(.ant-tree-node-content-wrapper) {
-              min-height: 0;
-              height: 1.5715em;
-              line-height: 1.5715em;
-            }
-
-            .tocDepth1,
-            .tocDepth2,
-            .tocDepth3,
-            .tocDepth4 {
-              line-height: 100%;
-              :global(.ant-tree-title) {
-                white-space: nowrap;
-                display: inline-block;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              }
-            }
-
-            .tocDepth1 {
-              font-weight: bold;
-              :global(.ant-tree-title) {
-                width: 256px - @padding-md * 2;
-              }
-            }
-
-            .tocDepth2 {
-              font-size: @font-size-sm;
-              :global(.ant-tree-title) {
-                width: 256px - @padding-md * 2 - @indent-unit;
-              }
-            }
-
-            .tocDepth3 {
-              font-size: @font-size-sm - 2px;
-              :global(.ant-tree-title) {
-                width: 256px - @padding-md * 2 - @indent-unit * 2;
-              }
-            }
-
-            .tocDepth4 {
-              font-size: @font-size-sm - 2px;
-              color: @text-color-secondary;
-              :global(.ant-tree-title) {
-                width: 256px - @padding-md * 2 - @indent-unit * 3;
-              }
-            }
-          }
-        }
-      }
+  :global(.ant-table) {
+    overflow: auto;
+    max-width: 100%;
+    table {
+      table-layout: auto;
     }
   }
 
-  .content {
-    padding: 24px 32px;
-    background: white;
+  :global(.ant-alert) {
+    padding-top: @padding-sm;
+    padding-bottom: @padding-sm;
 
-    @media (min-width: @screen-md-min) {
-      flex-grow: 1;
-      margin-left: @margin-md;
-      max-width: calc(100vw - @sider-width - @margin-md);
-      min-height: calc(100vh - @layout-header-height - 112px - @margin-md * 2);
+    > :global(.ant-alert-icon) {
+      padding-top: @padding-xss;
     }
+  }
 
-    @media (min-width: @screen-xl-min) {
-      width: @screen-xl-min - @sider-width - @margin-md;
-      max-width: @screen-xl-min - @sider-width - @margin-md;
-    }
+  :global(.ant-alert-message),
+  :global(.ant-table) th,
+  :global(.ant-table) td {
+    > :last-child {
+      margin-bottom: 0;
 
-    :global(.anchor) {
-      margin-left: -16px - @margin-xs;
-      margin-right: @margin-xs;
-      opacity: 0.3;
-
-      transition-property: opacity;
-      transition-duration: 0.3s;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-
-    :global(.ant-alert),
-    :global(.ant-table) {
-      margin-bottom: 1rem;
-    }
-
-    :global(.ant-table) {
-      overflow: auto;
-      max-width: 100%;
-      table {
-        table-layout: auto;
-      }
-    }
-
-    :global(.ant-alert) {
-      padding-top: @padding-sm;
-      padding-bottom: @padding-sm;
-
-      > :global(.ant-alert-icon) {
-        padding-top: @padding-xss;
-      }
-    }
-
-    :global(.ant-alert-message),
-    :global(.ant-table) th,
-    :global(.ant-table) td {
       > :last-child {
         margin-bottom: 0;
+      }
+    }
+  }
 
-        > :last-child {
-          margin-bottom: 0;
+  :global(.ant-table) thead th {
+    font-weight: bold;
+  }
+  :global(.ant-table) th,
+  :global(.ant-table) td {
+    vertical-align: top;
+  }
+
+  .footer {
+    height: 7rem;
+
+    .editOnGitHub {
+      text-align: right;
+      margin-top: 1rem;
+    }
+
+    .prevButton {
+      float: left;
+    }
+
+    .nextButton {
+      float: right;
+    }
+  }
+
+  :global(.remark-draw) {
+    display: block;
+    text-align: center;
+    margin: 1rem 0;
+    max-width: 100%;
+    overflow: auto;
+  }
+}
+
+.tocButton {
+  // Show a floating ToC show/hide button for single-column layout.
+  @media (max-width: @screen-sm-max) {
+    position: absolute;
+    z-index: @zindex-back-top - 1;
+    top: 0;
+    right: 0;
+    left: calc(100% - 80px);
+    bottom: 0;
+    margin: @margin-lg @margin-md;
+    text-align: right;
+  }
+
+  // Do not show a ToC show/hide button for double-column layout.
+  @media (min-width: @screen-md-min) {
+    display: none;
+  }
+}
+
+.tocShadow {
+  @media (max-width: @screen-sm-max) {
+    box-shadow: @box-shadow-base;
+  }
+}
+
+.tocWrapper {
+  padding: @padding-lg 16px @padding-lg 0;
+
+  @media (max-width: @screen-sm-max) {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0;
+
+    width: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+    padding-right: 0;
+
+    transition-property: opacity;
+    transition-duration: 0.3s;
+
+    // These two properties are overridden dynamically.
+    display: none;
+    opacity: 0;
+
+    nav {
+      background: white;
+      padding-top: 1rem;
+    }
+  }
+
+  @media (min-width: @screen-md-min) {
+    flex-basis: @sider-width;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .pageToC {
+    > :global(.toc-list) {
+      overflow: hidden;
+      position: relative;
+      font-size: @font-size-base;
+
+      @media (max-width: @screen-sm-max) {
+        padding-left: @padding-md;
+      }
+
+      @media (min-width: @screen-md-min) {
+        padding-left: @padding-xl;
+      }
+
+      :global(.toc-list) {
+        margin: 0;
+        padding-left: 0;
+        font-size: @font-size-sm;
+
+        :global(.toc-list) {
+          padding-left: @padding-md;
+        }
+      }
+    }
+  }
+
+  li {
+    list-style: none;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (max-width: @screen-sm-max) {
+      width: calc(100vw - 64px);
+      li {
+        width: calc(100vw - 64px);
+        li {
+          width: calc(100vw - 64px - @padding-md);
+          li {
+            width: calc(100vw - 64px - @padding-md * 2);
+          }
         }
       }
     }
 
-    :global(.ant-table) thead th {
-      font-weight: bold;
-    }
-    :global(.ant-table) th,
-    :global(.ant-table) td {
-      vertical-align: top;
-    }
-
-    .footer {
-      height: 7rem;
-
-      .editOnGitHub {
-        text-align: right;
-      }
-
-      .prevButton {
-        float: left;
-      }
-
-      .nextButton {
-        float: right;
+    @media (min-width: @screen-md-min) {
+      width: @sider-width - @padding-xl * 2;
+      li {
+        width: @sider-width - @padding-xl * 2;
+        li {
+          width: @sider-width - @padding-xl * 2 - @padding-md;
+          li {
+            width: @sider-width - @padding-xl * 2 - @padding-md * 2;
+          }
+        }
       }
     }
+  }
 
-    :global(.remark-draw) {
-      display: block;
-      text-align: center;
-      margin: 1rem 0;
-      max-width: 100%;
-      overflow: auto;
+  :global(.toc-link) {
+    color: @text-color;
+    height: 100%;
 
-      img {
-        width: auto;
-        max-width: auto;
-        max-width: 100%;
-      }
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+
+  :global(.toc-link::before) {
+    background-color: @armeria-darkgray;
+    content: ' ';
+    display: inline-block;
+    height: inherit;
+    left: 0;
+    margin-top: -1px;
+    position: absolute;
+    width: 1px;
+  }
+
+  :global(.is-active-link::before) {
+    background-color: @armeria-magenta;
+  }
+
+  :global(.is-collapsible) {
+    max-height: 1000px;
+    overflow: hidden;
+    transition: all 300ms ease-in-out;
+  }
+
+  :global(.is-collapsed) {
+    max-height: 0;
+  }
+
+  :global(.is-active-link) {
+    font-weight: bold;
+  }
+
+  :global(.ant-select) {
+    @media (max-width: @screen-sm-max) {
+      margin: 0 @margin-md @margin-md ;
+      width: calc(100% - @margin-md * 2);
+    }
+
+    @media (min-width: @screen-md-min) {
+      margin: 0 0 0 @margin-xl;
+      width: @sider-width - @margin-xl * 2;
     }
   }
 }

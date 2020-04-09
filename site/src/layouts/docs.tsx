@@ -1,6 +1,5 @@
 import {
   CloseOutlined,
-  DownOutlined,
   GithubOutlined,
   LeftOutlined,
   RightOutlined,
@@ -8,11 +7,12 @@ import {
 } from '@ant-design/icons';
 import { MDXProvider } from '@mdx-js/react';
 import { History, HistoryLocation } from '@reach/router';
-import { Button, Divider, Input, Layout, Tree } from 'antd';
+import { Button, Divider, Input, Layout, Select } from 'antd';
 import { graphql, Link, navigate, useStaticQuery, withPrefix } from 'gatsby';
 import { OutboundLink } from 'gatsby-plugin-google-analytics';
 import React from 'react';
 import StickyBox from 'react-sticky-box';
+import tocbot from 'tocbot';
 
 import 'antd/es/table/style';
 
@@ -23,29 +23,14 @@ import MaxWidth from '../components/max-width';
 import NoWrap from '../components/nowrap';
 import BaseLayout from './base';
 import styles from './docs.module.less';
-import jumpToHash from './jump-to-hash';
 
 import docsIndex from '../pages/docs/index.json';
 
 const { Content } = Layout;
-const { Search } = Input;
 
 interface DocsLayoutProps {
   history: History;
   location: HistoryLocation;
-  pageTitle?: string;
-}
-
-interface ToCItem {
-  key: string;
-  className: string;
-  href: string;
-  title: string;
-  pageTitle: string;
-  pageName: string;
-  hash: string;
-  mdxNode: any;
-  children: ToCItem[];
 }
 
 enum ToCState {
@@ -165,7 +150,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     query {
       allMdx {
         nodes {
-          tableOfContents
+          tableOfContents(maxDepth: 1)
           parent {
             ... on File {
               sourceInstanceName
@@ -177,10 +162,25 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     }
   `);
 
+  React.useLayoutEffect(() => {
+    tocbot.init({
+      tocSelector: `.${styles.pageToC}`,
+      contentSelector: `.${styles.content}`,
+      headingSelector: 'h1, h2, h3, h4',
+    });
+
+    return () => {
+      tocbot.destroy();
+    };
+  }, []);
+
   // Create a map of page name and MDX node pair, while adding the 'href' property.
   const nameToMdxNode: { [name: string]: any } = {};
   candidateMdxNodes.forEach((mdxNode: any) => {
-    if (mdxNode.parent.sourceInstanceName === 'docs') {
+    if (
+      mdxNode.parent.sourceInstanceName === 'docs' &&
+      mdxNode.tableOfContents.items.length > 0
+    ) {
       /* eslint-disable no-param-reassign */
       mdxNode.href = `/docs${
         mdxNode.parent.name === 'index' ? '' : `/${mdxNode.parent.name}`
@@ -192,13 +192,13 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   });
 
   // Create a list of MDX pages, ordered as specified in 'docs/index.json'.
-  const items: ToCItem[] = [];
+  const mdxNodes: any[] = [];
   let prevMdxNode: any;
   for (let i = 0; i < docsIndex.length; i += 1) {
     const name = docsIndex[i];
     const mdxNode = nameToMdxNode[name];
     if (mdxNode) {
-      newItems(mdxNode).forEach(item => items.push(item));
+      mdxNodes.push(mdxNode);
       if (prevMdxNode) {
         // Note: Do not refer to 'prevMdxNode' or 'mdxNode' directly here,
         //       to avoid creating cyclic references.
@@ -209,71 +209,56 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     }
   }
 
-  const currentItem = findCurrentItem(items, props.location);
-  const [selectedItemKeys, setSelectedItemKeys] = React.useState([
-    currentItem.key,
-  ]);
-  const [expandedItemKeys, setExpandedItemKeys] = React.useState(
-    // Expand all items initially.
-    // Pass [currentItem] to expand only the current item.
-    initialExpandedItemKeys(items),
-  );
-  const [autoExpandParent, setAutoExpandParent] = React.useState(true);
+  const currentMdxNode = findCurrentMdxNode();
 
   const [tocState, setTocState] = React.useState(ToCState.CLOSED);
   const tocStateRef = React.useRef(tocState);
   tocStateRef.current = tocState;
 
-  const [, setSearchValue] = React.useState('');
+  function findCurrentMdxNode(): any {
+    const path = props.location.pathname;
+    const prefix = '/docs';
+    const prefixPos = path.indexOf(prefix);
 
-  function onSearch(event: React.ChangeEvent<HTMLInputElement>) {
-    const searchText = event.target.value.trim().toLowerCase();
-    setAutoExpandParent(true);
-    if (searchText.length !== 0) {
-      const result = findExpandedItemKeys(searchText, items);
-      setExpandedItemKeys(result);
-      setSelectedItemKeys(result);
+    const fallbackPageName = 'index';
+    let pageName: string | undefined;
+    if (prefixPos < 0) {
+      pageName = fallbackPageName;
     } else {
-      const expandedKeys = initialExpandedItemKeys([...items, currentItem]);
-      setExpandedItemKeys(expandedKeys);
-      setSelectedItemKeys([currentItem.key]);
-    }
-  }
-
-  function onClick(event: React.MouseEvent, treeNode: any) {
-    // Close the Table of Contents if necessary.
-    if (tocState === ToCState.OPEN) {
-      setTocState(ToCState.CLOSING);
-      setTimeout(() => {
-        if (tocStateRef.current === ToCState.CLOSING) {
-          setTocState(ToCState.CLOSED);
+      const pathWithoutPrefix = path.substring(prefixPos + prefix.length);
+      if (pathWithoutPrefix === '' || pathWithoutPrefix === '/') {
+        pageName = fallbackPageName;
+      } else {
+        pageName = pathWithoutPrefix.substring(1);
+        if (pageName.endsWith('/')) {
+          pageName = pageName.substring(0, pageName.length - 1);
         }
-      }, tocAnimationDurationMillis);
-    }
-
-    const item = treeNode as ToCItem;
-    // Use 'navigate' only when there's actual page transition.
-    if (item.pageName !== currentItem.pageName) {
-      navigate(item.href);
-    } else {
-      // Update the ToC tree state.
-      if (!expandedItemKeys.find(key => key === item.key)) {
-        setExpandedItemKeys([...expandedItemKeys, item.key]);
       }
-      setSelectedItemKeys([item.key]);
-
-      // Scroll down to the anchor.
-      jumpToHash(item.hash);
     }
+
+    for (let i = 0; i < mdxNodes.length; i += 1) {
+      const e = mdxNodes[i];
+      if (pageName === e.parent.name) {
+        return e;
+      }
+    }
+
+    return mdxNodes[0];
   }
 
-  function onExpand(expandedKeys: string[]) {
-    setAutoExpandParent(false);
-    setExpandedItemKeys(expandedKeys);
+  function renderButton(
+    node: any,
+    className: string,
+    children: React.ReactNode,
+  ) {
+    return (
+      <Link className={className} to={node.href}>
+        <Button>{children}</Button>
+      </Link>
+    );
   }
 
   function toggleToC() {
-    setSearchValue('');
     switch (tocState) {
       case ToCState.CLOSED:
         setTocState(ToCState.OPENING);
@@ -325,13 +310,44 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   return (
     <MDXProvider components={mdxComponents}>
       <BaseLayout
-        pageTitle={`${currentItem.pageTitle} — Armeria documentation`}
+        pageTitle={`${currentMdxNode.tableOfContents.items[0].title} — Armeria documentation`}
         history={props.history}
         location={props.location}
       >
         <div className={styles.wrapper}>
+          <div className={styles.content}>
+            <Content className="ant-typography" role="main">
+              {props.children}
+              <div className={styles.footer}>
+                <div className={styles.editOnGitHub}>
+                  <OutboundLink href={currentMdxNode.githubHref}>
+                    <GithubOutlined /> Edit on GitHub
+                  </OutboundLink>
+                </div>
+                <Divider />
+                {currentMdxNode.prevNodeName
+                  ? renderButton(
+                      nameToMdxNode[currentMdxNode.prevNodeName],
+                      styles.prevButton,
+                      <>
+                        <LeftOutlined /> Prev
+                      </>,
+                    )
+                  : []}
+                {currentMdxNode.nextNodeName
+                  ? renderButton(
+                      nameToMdxNode[currentMdxNode.nextNodeName],
+                      styles.nextButton,
+                      <>
+                        Next <RightOutlined />
+                      </>,
+                    )
+                  : []}
+              </div>
+            </Content>
+          </div>
           <div className={styles.tocButton}>
-            <StickyBox offsetTop={16} offsetBottom={16}>
+            <StickyBox offsetTop={24} offsetBottom={24}>
               <Button onClick={toggleToC}>
                 {tocState === ToCState.OPEN ? (
                   <CloseOutlined title="Close table of contents" />
@@ -347,175 +363,41 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
             role="directory"
           >
             <StickyBox
-              offsetTop={0}
-              offsetBottom={16}
+              offsetTop={24}
+              offsetBottom={24}
               className={styles.tocShadow}
             >
-              <div className={styles.tocInnerWrapper}>
-                <div className={styles.toc}>
-                  <Search
-                    placeholder="Search table of contents"
-                    onChange={onSearch}
-                    allowClear
-                  />
-                  <Tree
-                    className={styles.tocTree}
-                    treeData={items}
-                    selectedKeys={selectedItemKeys}
-                    expandedKeys={expandedItemKeys}
-                    autoExpandParent={autoExpandParent}
-                    multiple
-                    onClick={onClick}
-                    onExpand={onExpand}
-                    switcherIcon={<DownOutlined />}
-                  />
-                </div>
-              </div>
+              <nav>
+                <div className={styles.pageToC} />
+                <Select
+                  showSearch
+                  placeholder="Jump to other page"
+                  onChange={value => {
+                    navigate(`${value}`);
+                  }}
+                  filterOption={(input, option) =>
+                    option.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {mdxNodes.map(e =>
+                    e !== currentMdxNode ? (
+                      <Select.Option key={e.href} value={e.href}>
+                        {e.tableOfContents.items[0].title}
+                      </Select.Option>
+                    ) : (
+                      ''
+                    ),
+                  )}
+                </Select>
+              </nav>
             </StickyBox>
-          </div>
-          <div className={styles.content}>
-            <Content className="ant-typography" role="main">
-              {props.children}
-              <div className={styles.footer}>
-                <div className={styles.editOnGitHub}>
-                  <OutboundLink href={currentItem.mdxNode.githubHref}>
-                    <GithubOutlined /> Edit on GitHub
-                  </OutboundLink>
-                </div>
-                <Divider />
-                {currentItem.mdxNode.prevNodeName
-                  ? renderButton(
-                      nameToMdxNode[currentItem.mdxNode.prevNodeName],
-                      styles.prevButton,
-                      <>
-                        <LeftOutlined /> Prev
-                      </>,
-                    )
-                  : []}
-                {currentItem.mdxNode.nextNodeName
-                  ? renderButton(
-                      nameToMdxNode[currentItem.mdxNode.nextNodeName],
-                      styles.nextButton,
-                      <>
-                        Next <RightOutlined />
-                      </>,
-                    )
-                  : []}
-              </div>
-            </Content>
           </div>
         </div>
       </BaseLayout>
     </MDXProvider>
   );
 };
-
-function newItems(
-  mdxNode: any,
-  mdxTableOfContents?: any,
-  depth?: number,
-): ToCItem[] {
-  const mdxToC = mdxTableOfContents || mdxNode.tableOfContents;
-  if (!mdxToC || !mdxToC.items || mdxToC.items.length <= 0) {
-    return [];
-  }
-
-  const currentDepth = depth || 1;
-
-  return mdxToC.items.map((item: any) => {
-    return {
-      key: `${mdxNode.parent.name}${item.url}`,
-      className: styles[`tocDepth${currentDepth}`],
-      href: `${mdxNode.href}${item.url}`,
-      title: item.title,
-      pageTitle: mdxNode.tableOfContents.items[0].title,
-      pageName: mdxNode.parent.name,
-      hash: item.url,
-      mdxNode,
-      children: newItems(mdxNode, item, currentDepth + 1),
-    };
-  });
-}
-
-function findCurrentItem(
-  items: ToCItem[],
-  location: HistoryLocation,
-): ToCItem | undefined {
-  const path = location.pathname;
-  const prefix = '/docs';
-  const prefixPos = path.indexOf(prefix);
-
-  const fallbackPageName = 'index';
-  let pageName: string | undefined;
-  if (prefixPos < 0) {
-    pageName = fallbackPageName;
-  } else {
-    const pathWithoutPrefix = path.substring(prefixPos + prefix.length);
-    if (pathWithoutPrefix === '' || pathWithoutPrefix === '/') {
-      pageName = fallbackPageName;
-    } else {
-      pageName = pathWithoutPrefix.substring(1);
-      if (pageName.endsWith('/')) {
-        pageName = pageName.substring(0, pageName.length - 1);
-      }
-    }
-  }
-
-  let bestMatch: ToCItem | undefined;
-  for (let i = 0; i < items.length; i += 1) {
-    const item = items[i];
-    if (pageName !== item.mdxNode.parent.name) {
-      continue;
-    }
-
-    if (item.href.endsWith(location.hash)) {
-      bestMatch = item;
-      break;
-    }
-
-    const found = findCurrentItem(item.children, location);
-    if (found) {
-      bestMatch = found;
-      break;
-    }
-
-    if (!bestMatch) {
-      bestMatch = item;
-    }
-  }
-
-  return bestMatch || items[0];
-}
-
-function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
-  const firstCall = result === undefined;
-  const collected = result || [];
-
-  items.forEach(item => {
-    if (firstCall || item.children.length > 0) {
-      collected.push(item.key);
-      initialExpandedItemKeys(item.children, collected);
-    }
-  });
-
-  return collected;
-}
-
-function findExpandedItemKeys(searchText: string, items: ToCItem[]): string[] {
-  return items.flatMap(item => {
-    if (item.title.toLowerCase().indexOf(searchText) >= 0) {
-      return [item.key, ...findExpandedItemKeys(searchText, item.children)];
-    }
-    return findExpandedItemKeys(searchText, item.children);
-  });
-}
-
-function renderButton(node: any, className: string, children: React.ReactNode) {
-  return (
-    <Link className={className} to={node.href}>
-      <Button>{children}</Button>
-    </Link>
-  );
-}
 
 export default DocsLayout;

@@ -24,7 +24,7 @@ export default (hash: string) => {
     }
 
     // Scroll to the target element.
-    window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
+    window.scroll({ top: targetElement.offsetTop });
 
     // Highlight the target element briefly.
     flashAtHash(hash);
