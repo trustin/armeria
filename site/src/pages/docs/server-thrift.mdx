@@ -71,24 +71,24 @@ server.start();
 <type://THttpService> supports four Thrift serialization formats: TBINARY, TCOMPACT, TJSON and TTEXT.
 It chooses the serialization format based on the value of the `content-type` HTTP header.
 
-+------------------------------------------------+----------------------------------------+
-| Header value                                   | Serialization format                   |
-+================================================+========================================+
-| Unspecified or                                 | Use the default serialization format   |
-| `application/x-thrift`                         | (TBINARY unless specified)             |
-+------------------------------------------------+----------------------------------------+
-| `application/x-thrift; protocol=TBINARY` or    | TBINARY                                |
-| `vnd.apache.thrift.binary`                     |                                        |
-+------------------------------------------------+----------------------------------------+
-| `application/x-thrift; protocol=TCOMPACT` or   | TCOMPACT                               |
-| `vnd.apache.thrift.compact`                    |                                        |
-+------------------------------------------------+----------------------------------------+
-| `application/x-thrift; protocol=TJSON` or      | TJSON                                  |
-| `vnd.apache.thrift.json`                       |                                        |
-+------------------------------------------------+----------------------------------------+
-| `application/x-thrift; protocol=TTEXT` or      | TTEXT                                  |
-| `vnd.apache.thrift.text`                       |                                        |
-+------------------------------------------------+----------------------------------------+
++----------------------------------------------------+----------------------------------------+
+| Header value                                       | Serialization format                   |
++====================================================+========================================+
+| Unspecified or                                     | Use the default serialization format   |
+| `application/x-thrift`                             | (TBINARY unless specified)             |
++----------------------------------------------------+----------------------------------------+
+| `application/x-thrift; protocol=TBINARY` or <br /> | TBINARY                                |
+| `vnd.apache.thrift.binary`                         |                                        |
++----------------------------------------------------+----------------------------------------+
+| `application/x-thrift; protocol=TCOMPACT` or <br />| TCOMPACT                               |
+| `vnd.apache.thrift.compact`                        |                                        |
++----------------------------------------------------+----------------------------------------+
+| `application/x-thrift; protocol=TJSON` or <br />   | TJSON                                  |
+| `vnd.apache.thrift.json`                           |                                        |
++----------------------------------------------------+----------------------------------------+
+| `application/x-thrift; protocol=TTEXT` or <br />   | TTEXT                                  |
+| `vnd.apache.thrift.text`                           |                                        |
++----------------------------------------------------+----------------------------------------+
 
 To change the default serialization format from TBINARY to something else, specify it when creating a
 <type://THttpService>:

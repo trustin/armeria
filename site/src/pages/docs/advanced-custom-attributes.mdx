@@ -5,15 +5,15 @@ You can do this by attaching attributes to a <type://RequestContext>. To attach 
 you need to define an `AttributeKey` first:
 
 ```java
-    import io.netty.util.AttributeKey;
+import io.netty.util.AttributeKey;
 
-    public final class MyAttributeKeys {
-        public static final AttributeKey<Integer> INT_ATTR =
-                AttributeKey.valueOf(MyAttributeKeys.class, "INT_ATTR");
-        public static final AttributeKey<MyBean> BEAN_ATTR =
-                AttributeKey.valueOf(MyAttributeKeys.class, "BEAN_ATTR");
-        ...
-    }
+public final class MyAttributeKeys {
+    public static final AttributeKey<Integer> INT_ATTR =
+            AttributeKey.valueOf(MyAttributeKeys.class, "INT_ATTR");
+    public static final AttributeKey<MyBean> BEAN_ATTR =
+            AttributeKey.valueOf(MyAttributeKeys.class, "BEAN_ATTR");
+    ...
+}
 ```
 
 Then, you can access them via `RequestContext.attr(AttributeKey)`:
