@@ -1,6 +1,5 @@
 [
   "index",
-  "example",
   "setup",
   "server-basics",
   "server-decorator",
@@ -33,5 +32,6 @@
   "advanced-zookeeper",
   "advanced-saml",
   "advanced-spring-webflux-integration",
-  "advanced-dropwizard-integration"
+  "advanced-dropwizard-integration",
+  "example"
 ]
