@@ -9,10 +9,16 @@
     line-height: 1.15;
 
     > code {
-      font-size: 87.5%;
-      font-family: @code-family;
       margin: 0;
       padding: 0;
+      border: none;
+      background: transparent;
+      white-space: pre;
+      word-break: keep-all;
+
+      &::before, &::after {
+        content: '';
+      }
     }
   }
 }

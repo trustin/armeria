@@ -12,6 +12,7 @@ import Header from '../components/header';
 import Footer from '../components/footer';
 
 import styles from './base.module.less';
+import flashAtHash from './flash-at-hash';
 import jumpToHash from './jump-to-hash';
 
 const { Content } = Layout;
@@ -24,13 +25,19 @@ interface BaseLayoutProps {
   pageTitle?: string;
 }
 
-const BaseLayout: React.FC<BaseLayoutProps> = props => {
-  const [loaded, setLoaded] = React.useState(false);
+let firstRender = true;
 
+const BaseLayout: React.FC<BaseLayoutProps> = props => {
   React.useEffect(() => {
-    setLoaded(true);
-    // Scroll to the anchor if necessary.
-    jumpToHash(props.location.hash);
+    // Jump to hash or flash at hash only when rendering in a browser.
+    if (typeof window !== 'undefined') {
+      if (firstRender) {
+        firstRender = false;
+        jumpToHash(props.location.hash);
+      } else {
+        flashAtHash(props.location.hash);
+      }
+    }
   }, [props.location]);
 
   const { site } = useStaticQuery(graphql`
@@ -56,10 +63,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = props => {
           fixed
         />
       </span>
-      <Layout
-        className={styles.layout}
-        style={loaded ? {} : { overflowX: 'hidden' }}
-      >
+      <Layout className={styles.layout}>
         <Header location={props.location} />
         <Content className={styles.content}>{props.children}</Content>
         <Footer />

@@ -37,27 +37,22 @@ const TypeLink: React.FC<TypeLinkProps> = props => {
       }
     }
 
-    const label = (
-      <code>
-        {isAnnotation ? '@' : ''}
-        {simpleTypeName}
-      </code>
-    );
+    const label = `${isAnnotation ? '@' : ''}${simpleTypeName}`;
 
     if (href) {
       return (
-        <span className={styles.apiLink}>
+        <code>
           <OutboundLink href={href}>{label}</OutboundLink>
-          {suffix}
-        </span>
+          <span className={styles.typeLinkSuffix}>{suffix}</span>
+        </code>
       );
     }
 
     return (
-      <span className={styles.apiLink}>
+      <code>
         {label}
-        {suffix}
-      </span>
+        <span className={styles.typeLinkSuffix}>{suffix}</span>
+      </code>
     );
   }
 

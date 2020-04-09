@@ -1,3 +1,5 @@
+import flashAtHash from './flash-at-hash';
+
 export default (hash: string) => {
   if (!hash || !hash.startsWith('#')) {
     return;
@@ -16,28 +18,16 @@ export default (hash: string) => {
       return;
     }
 
-    // Scroll to the target element.
-    window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
-
     // Update the history.
     if (window.location.hash !== hash) {
       window.history.pushState({}, '', hash);
     }
 
+    // Scroll to the target element.
+    window.scroll({ top: Math.max(targetElement.offsetTop - 16, 0) });
+
     // Highlight the target element briefly.
-    const oldTransitionProperty = targetElement.style.transitionProperty;
-    const oldTransitionDuration = targetElement.style.transitionDuration;
-    const oldBgColor = targetElement.style.backgroundColor;
-    targetElement.style.transitionProperty = 'background-color';
-    targetElement.style.transitionDuration = '0.5s';
-    targetElement.style.backgroundColor = 'rgb(186, 231, 255)';
-    setTimeout(() => {
-      targetElement.style.backgroundColor = oldBgColor;
-      setTimeout(() => {
-        targetElement.style.transitionProperty = oldTransitionProperty;
-        targetElement.style.transitionDuration = oldTransitionDuration;
-      }, 500);
-    }, 500);
+    flashAtHash(hash);
   }
 
   tryScroll(0);

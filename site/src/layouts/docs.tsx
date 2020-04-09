@@ -104,9 +104,11 @@ const mdxComponents: any = {
   },
   table: (props: any) => {
     return (
-      <div className="ant-table ant-table-bordered ant-table-small">
-        <div className="ant-table-content">
-          <table {...props} style={{ tableLayout: 'auto' }} />
+      <div className="ant-table ant-table-small ant-table-bordered">
+        <div className="ant-table-container">
+          <div className="ant-table-content">
+            <table {...props} />
+          </div>
         </div>
       </div>
     );
@@ -116,6 +118,9 @@ const mdxComponents: any = {
   },
   tbody: (props: any) => {
     return <tbody className="ant-table-tbody" {...props} />;
+  },
+  tfoot: (props: any) => {
+    return <tfoot className="ant-table-tfoot" {...props} />;
   },
   th: (props: any) => {
     return <th className="ant-table-cell" {...filterTableCellProps(props)} />;
@@ -219,13 +224,16 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
 
   function onSearch(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value.trim().toLowerCase();
-    const result =
-      searchText.length !== 0
-        ? findExpandedItemKeys(searchText, items)
-        : [currentItem.key];
     setAutoExpandParent(true);
-    setExpandedItemKeys(result);
-    setSelectedItemKeys(result);
+    if (searchText.length !== 0) {
+      const result = findExpandedItemKeys(searchText, items);
+      setExpandedItemKeys(result);
+      setSelectedItemKeys(result);
+    } else {
+      const expandedKeys = initialExpandedItemKeys([...items, currentItem]);
+      setExpandedItemKeys(expandedKeys);
+      setSelectedItemKeys([currentItem.key]);
+    }
   }
 
   function onClick(event: React.MouseEvent, treeNode: any) {
@@ -284,125 +292,27 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     }
   }
 
-  // Style functions for responsive table of contents.
-  const [viewportWidth, setViewportWidth] = React.useState(0);
-  React.useLayoutEffect(() => {
-    function updateViewportWidth() {
-      setViewportWidth(window.innerWidth);
-    }
-    window.addEventListener('resize', updateViewportWidth);
-    updateViewportWidth();
-    return () => window.removeEventListener('resize', updateViewportWidth);
-  }, []);
-
-  function wrapperStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        display: 'flex',
-        alignItems: 'stretch',
-        margin: '16px auto',
-        maxWidth: '1200px',
-      };
-    }
-
-    return {
-      position: 'relative',
-    };
-  }
-
-  function tocButtonStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        display: 'none',
-      };
-    }
-
-    return {
-      position: 'absolute',
-      zIndex: 200,
-      top: 0,
-      right: 0,
-      left: 'calc(100% - 80px)',
-      bottom: 0,
-      margin: '16px',
-      textAlign: 'right',
-    };
-  }
-
+  // Style functions for fading in/out table of contents.
   function tocWrapperStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {
-        flexBasis: '256px',
-        flexGrow: 0,
-        flexShrink: 0,
-        background: 'white',
-      };
-    }
-
-    const style: React.CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      left: 0,
-      bottom: 0,
-      zIndex: 100,
-      transitionProperty: 'opacity',
-      transitionDuration: `${tocAnimationDurationMillis}ms`,
-    };
-
     switch (tocState) {
       case ToCState.OPENING:
-        style.display = '';
-        style.opacity = 0;
-        break;
+        return {
+          display: 'block',
+          opacity: 0,
+        };
       case ToCState.OPEN:
-        style.display = '';
-        style.opacity = 1;
-        break;
+        return {
+          display: 'block',
+          opacity: 1,
+        };
       case ToCState.CLOSING:
-        style.display = '';
-        style.opacity = 0;
-        break;
+        return {
+          display: 'block',
+          opacity: 0,
+        };
       default:
-        style.display = 'none';
-        style.opacity = 0;
-        break;
+        return {};
     }
-    return style;
-  }
-
-  function tocShadowStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      return {};
-    }
-
-    return {
-      // From @box-shadow-base:
-      boxShadow:
-        '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-    };
-  }
-
-  function contentStyle(): React.CSSProperties {
-    if (isLargeDisplay()) {
-      const tocPanelWidth = 256 + 16;
-      return {
-        flexGrow: 1,
-        marginLeft: '16px',
-        width: viewportWidth >= 1200 ? `${1200 - tocPanelWidth}px` : undefined,
-        maxWidth:
-          viewportWidth >= 1200
-            ? `${1200 - tocPanelWidth}px`
-            : `calc(100vw - ${tocPanelWidth}px)`,
-        minHeight: 'calc(100vh - 64px - 112px - 32px)',
-      };
-    }
-
-    return {};
-  }
-
-  function isLargeDisplay() {
-    return viewportWidth >= 768;
   }
 
   return (
@@ -412,8 +322,8 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
         history={props.history}
         location={props.location}
       >
-        <div className={styles.wrapper} style={wrapperStyle()}>
-          <div className={styles.tocButton} style={tocButtonStyle()}>
+        <div className={styles.wrapper}>
+          <div className={styles.tocButton}>
             <StickyBox offsetTop={16} offsetBottom={16}>
               <Button onClick={toggleToC}>
                 {tocState === ToCState.OPEN ? (
@@ -429,7 +339,11 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
             style={tocWrapperStyle()}
             role="directory"
           >
-            <StickyBox offsetTop={0} offsetBottom={16} style={tocShadowStyle()}>
+            <StickyBox
+              offsetTop={0}
+              offsetBottom={16}
+              className={styles.tocShadow}
+            >
               <div className={styles.tocInnerWrapper}>
                 <div className={styles.toc}>
                   <Search
@@ -452,7 +366,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
               </div>
             </StickyBox>
           </div>
-          <div className={styles.content} style={contentStyle()}>
+          <div className={styles.content}>
             <Content className="ant-typography" role="main">
               {props.children}
               <div className={styles.footer}>
@@ -570,14 +484,8 @@ function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
   const firstCall = result === undefined;
   const collected = result || [];
 
-  const maxNumExpandedItems = Number.MAX_SAFE_INTEGER;
-
   items.forEach(item => {
-    // Expand up to 2 items so that a visitor is not overwhelmed.
-    if (
-      collected.length < maxNumExpandedItems &&
-      (firstCall || item.children.length > 0)
-    ) {
+    if (firstCall || item.children.length > 0) {
       collected.push(item.key);
       initialExpandedItemKeys(item.children, collected);
     }
@@ -589,9 +497,8 @@ function initialExpandedItemKeys(items: ToCItem[], result?: string[]) {
 function findExpandedItemKeys(searchText: string, items: ToCItem[]): string[] {
   return items.flatMap(item => {
     if (item.title.toLowerCase().indexOf(searchText) >= 0) {
-      return [item.key];
+      return [item.key, ...findExpandedItemKeys(searchText, item.children)];
     }
-    // Search recursively.
     return findExpandedItemKeys(searchText, item.children);
   });
 }
