@@ -32,6 +32,5 @@
   "advanced-zookeeper",
   "advanced-saml",
   "advanced-spring-webflux-integration",
-  "advanced-dropwizard-integration",
-  "example"
+  "advanced-dropwizard-integration"
 ]
