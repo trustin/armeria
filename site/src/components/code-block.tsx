@@ -20,6 +20,7 @@ import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
 import kotlin from 'react-syntax-highlighter/dist/esm/languages/prism/kotlin';
 import markup from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
 import protobuf from 'react-syntax-highlighter/dist/esm/languages/prism/protobuf';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
 // @ts-ignore
 import shellSession from 'refractor/lang/shell-session';
 /* eslint-enable import/no-extraneous-dependencies */
@@ -46,6 +47,7 @@ const supportedLanguages = {
   protobuf,
   'shell-session': shellSession,
   xml: markup,
+  yaml,
 };
 
 Object.entries(supportedLanguages).forEach(([name, func]) => {
