@@ -28,8 +28,6 @@ interface BaseLayoutProps {
 let firstRender = true;
 
 const BaseLayout: React.FC<BaseLayoutProps> = props => {
-  const [loaded, setLoaded] = React.useState(false);
-  React.useEffect(() => setLoaded(true), []);
   React.useEffect(() => {
     // Jump to hash or flash at hash only when rendering in a browser.
     if (typeof window !== 'undefined') {
@@ -65,10 +63,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = props => {
           fixed
         />
       </span>
-      <Layout
-        className={styles.layout}
-        style={loaded ? {} : { overflowX: 'hidden' }}
-      >
+      <Layout className={styles.layout}>
         <Header location={props.location} />
         <Content className={styles.content}>{props.children}</Content>
         <Footer />
