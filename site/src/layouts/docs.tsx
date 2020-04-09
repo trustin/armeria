@@ -19,12 +19,13 @@ import 'antd/es/table/style';
 import { Tip, Warning } from '../components/alert';
 import { TypeLink } from '../components/api-link';
 import CodeBlock from '../components/code-block';
+import MaxWidth from '../components/max-width';
+import NoWrap from '../components/nowrap';
 import BaseLayout from './base';
 import styles from './docs.module.less';
 import jumpToHash from './jump-to-hash';
 
 import docsIndex from '../pages/docs/index.json';
-import MaxWidth from '../components/max-width';
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -134,6 +135,7 @@ const mdxComponents: any = {
   CodeBlock,
   TypeLink,
   MaxWidth,
+  NoWrap,
 };
 
 function filterTableCellProps(props: any) {
