@@ -29,6 +29,8 @@
 @text-color-secondary-dark: fade(@text-color-dark, 85%);
 @heading-color: @text-color;
 
+@border-radius-base: 3px;
+
 @layout-header-background: @armeria-darkgray;
 @layout-header-background-secondary: darken(@layout-header-background, 10%);
 @layout-body-background: #f7f7f7;
@@ -55,4 +57,36 @@ h4,
 h5,
 h6 {
   font-family: @heading-family;
+}
+
+:global(.ant-typography) {
+  code::before,
+  code::after,
+  kbd::before,
+  kbd::after,
+  var::before,
+  var::after,
+  samp::before,
+  samp::after,
+  tt::before,
+  tt::after {
+    letter-spacing: -0.3em;
+    content: '\00a0';
+  }
+
+  code,
+  kbd,
+  var,
+  samp,
+  tt {
+    font-size: 87.5%;
+    margin: 0;
+    padding: 2px 0;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: @border-radius-base;
+    color: inherit;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
 }
