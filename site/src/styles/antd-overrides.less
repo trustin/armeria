@@ -50,15 +50,6 @@
 @marketing-block-width: 532px;
 @marketing-block-margin: 100px;
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: @heading-family;
-}
-
 :global(.ant-typography) {
   code::before,
   code::after,
@@ -88,5 +79,37 @@ h6 {
     color: inherit;
     white-space: pre-wrap;
     word-break: break-all;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: @heading-family;
+
+  code::before,
+  code::after,
+  kbd::before,
+  kbd::after,
+  var::before,
+  var::after,
+  samp::before,
+  samp::after,
+  tt::before,
+  tt::after {
+    content: '' !important;
+  }
+
+  code,
+  kbd,
+  var,
+  samp,
+  tt {
+    font-size: 100% !important;
+    padding: 0  !important;
+    background: transparent !important;
   }
 }
