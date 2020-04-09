@@ -104,9 +104,11 @@ const mdxComponents: any = {
   },
   table: (props: any) => {
     return (
-      <div className="ant-table ant-table-bordered ant-table-small">
-        <div className="ant-table-content">
-          <table {...props} />
+      <div className="ant-table ant-table-small ant-table-bordered">
+        <div className="ant-table-container">
+          <div className="ant-table-content">
+            <table {...props} />
+          </div>
         </div>
       </div>
     );
@@ -116,6 +118,9 @@ const mdxComponents: any = {
   },
   tbody: (props: any) => {
     return <tbody className="ant-table-tbody" {...props} />;
+  },
+  tfoot: (props: any) => {
+    return <tfoot className="ant-table-tfoot" {...props} />;
   },
   th: (props: any) => {
     return <th className="ant-table-cell" {...filterTableCellProps(props)} />;
