@@ -24,7 +24,7 @@
   .tocButton {
     @media (max-width: @screen-sm-max) {
       position: absolute;
-      z-index: 200;
+      z-index: @zindex-back-top - 1;
       top: 0;
       right: 0;
       left: calc(100% - 80px);
@@ -45,7 +45,6 @@
       right: 0;
       left: 0;
       bottom: 0;
-      z-index: 100;
       transition-property: opacity;
       transition-duration: 0.3s;
 

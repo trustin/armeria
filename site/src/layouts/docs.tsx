@@ -299,19 +299,22 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
         return {
           display: 'block',
           opacity: 0,
+          zIndex: 8,
         };
       case ToCState.OPEN:
         return {
           display: 'block',
           opacity: 1,
+          zIndex: 8,
         };
       case ToCState.CLOSING:
         return {
           display: 'block',
           opacity: 0,
+          zIndex: 8,
         };
       default:
-        return {};
+        return { zIndex: 'auto' };
     }
   }
 
