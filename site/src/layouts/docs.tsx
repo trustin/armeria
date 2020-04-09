@@ -24,6 +24,7 @@ import styles from './docs.module.less';
 import jumpToHash from './jump-to-hash';
 
 import docsIndex from '../pages/docs/index.json';
+import MaxWidth from '../components/max-width';
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -132,6 +133,7 @@ const mdxComponents: any = {
   Warning,
   CodeBlock,
   TypeLink,
+  MaxWidth,
 };
 
 function filterTableCellProps(props: any) {
