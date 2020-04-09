@@ -191,19 +191,19 @@ Therefore, Armeria provides various ways that let users group the range of circu
 - Group by host: a single <type://CircuitBreaker> is used for each remote host.
 
   ```java
-      import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerRpcClient;
-      import com.linecorp.armeria.common.RpcResponse;
+  import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerRpcClient;
+  import com.linecorp.armeria.common.RpcResponse;
 
-      // Create a CircuitBreaker with the key name
-      final Function<String, CircuitBreaker> factory = key -> CircuitBreaker.of("my-cb-" + key);
-      final CircuitBreakerStrategy httpStrategy = CircuitBreakerStrategy.onServerErrorStatus();
-      final CircuitBreakerStrategy rpcStrategy =
-              response -> response.completionFuture().handle((res, cause) -> cause == null);
-      // Create CircuitBreakers per host (a.com, b.com ...)
+  // Create a CircuitBreaker with the key name
+  final Function<String, CircuitBreaker> factory = key -> CircuitBreaker.of("my-cb-" + key);
+  final CircuitBreakerStrategy httpStrategy = CircuitBreakerStrategy.onServerErrorStatus();
+  final CircuitBreakerStrategy rpcStrategy =
+          response -> response.completionFuture().handle((res, cause) -> cause == null);
+  // Create CircuitBreakers per host (a.com, b.com ...)
 
-      CircuitBreakerClient.newPerHostDecorator(factory, httpStrategy);
-      CircuitBreakerRpcClient.newPerHostDecorator(factory, rpcStrategy);
-      // The names of the created CircuitBreaker: my-cb-a.com, my-cb-b.com, ...
+  CircuitBreakerClient.newPerHostDecorator(factory, httpStrategy);
+  CircuitBreakerRpcClient.newPerHostDecorator(factory, rpcStrategy);
+  // The names of the created CircuitBreaker: my-cb-a.com, my-cb-b.com, ...
   ```
 
 - Group by method: a single <type://CircuitBreaker> is used for each method.

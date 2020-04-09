@@ -130,79 +130,79 @@ Pre-defined log formats are as follows.
 
 Tokens for the log format are listed in the following table.
 
-+---------------------------+-------------------+----------------------------------------------------+
-| Tokens                    | Condition support | Description                                        |
-+===========================+===================+====================================================+
-| `%A`                      | No                | the local IP address                               |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%a`                      | No                | the IP address of the client who initiated a       |
-|                           |                   | request. Use `%{c}a` format string to get the      |
-|                           |                   | remote IP address where the channel is connected   |
-|                           |                   | to, which may yield a different value when there   |
-|                           |                   | is an intermediary proxy server.                   |
-|                           |                   | This value relies on the `clientAddress()` and     |
-|                           |                   | `remoteAddress()` methods of                       |
-|                           |                   | <type://ServiceRequestContext>, please refer to    |
-|                           |                   | :ref:`client_address` about how to configure the   |
-|                           |                   | <type://ServerBuilder> to get the client address   |
-|                           |                   | you interest.                                          |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%h`                      | No                | the remote hostname or IP address if DNS           |
-|                           |                   | hostname lookup is not available                   |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%I`                      | No                | the request ID. Use `%{short}I` format string to   |
-|                           |                   | get the short form.                                |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%l`                      | No                | the remote logname of the user                     |
-|                           |                   | (not supported yet, always write `-`)              |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%u`                      | No                | the name of the authenticated remote user          |
-|                           |                   | (not supported yet, always write `-`)              |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%t`                      | No                | the date, time and time zone that the request      |
-|                           |                   | was received, by default in `strftime` format      |
-|                           |                   | %d/%b/%Y:%H:%M:%S %z.                              |
-|                           |                   | (for example, `10/Oct/2000:13:55:36 -0700`)        |
-|                           |                   | Refer to :ref:`timestamp-format` for more          |
-|                           |                   | information.                                       |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%r`                      | Yes               | the request line from the client                   |
-|                           |                   | (for example, `GET /path h2`)                      |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%s`                      | No                | the HTTP status code returned to the client        |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%b`                      | Yes               | the size of the object returned to the client,     |
-|                           |                   | measured in bytes                                  |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%{HEADER_NAME}i`         | Yes               | the value of the specified HTTP request header     |
-|                           |                   | name                                               |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%{HEADER_NAME}o`         | Yes               | the value of the specified HTTP response header    |
-|                           |                   | name                                               |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%{ATTRIBUTE_NAME}j`      | Yes               | the value of the specified attribute name          |
-+---------------------------+-------------------+----------------------------------------------------+
-| `%{REQUEST_LOG_NAME}L`    | Yes               | the value of the specified variable of the         |
-|                           |                   | <type://RequestLog>. Refer to :ref:`request-log`   |
-|                           |                   | for more information.                              |
-+---------------------------+-------------------+----------------------------------------------------+
++-------------------------------------+-------------------+----------------------------------------------------+
+|<div style="width:12rem">Tokens</div>| Condition support | Description                                        |
++=====================================+===================+====================================================+
+| `%A`                                | No                | the local IP address                               |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%a`                                | No                | the IP address of the client who initiated a       |
+|                                     |                   | request. Use `%{c}a` format string to get the      |
+|                                     |                   | remote IP address where the channel is connected   |
+|                                     |                   | to, which may yield a different value when there   |
+|                                     |                   | is an intermediary proxy server.                   |
+|                                     |                   | This value relies on the `clientAddress()` and     |
+|                                     |                   | `remoteAddress()` methods of                       |
+|                                     |                   | <type://ServiceRequestContext>, please refer to    |
+|                                     |                   | :ref:`client_address` about how to configure the   |
+|                                     |                   | <type://ServerBuilder> to get the client address   |
+|                                     |                   | you interest.                                      |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%h`                                | No                | the remote hostname or IP address if DNS           |
+|                                     |                   | hostname lookup is not available                   |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%I`                                | No                | the request ID. Use `%{short}I` format string to   |
+|                                     |                   | get the short form.                                |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%l`                                | No                | the remote logname of the user                     |
+|                                     |                   | (not supported yet, always write `-`)              |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%u`                                | No                | the name of the authenticated remote user          |
+|                                     |                   | (not supported yet, always write `-`)              |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%t`                                | No                | the date, time and time zone that the request      |
+|                                     |                   | was received, by default in `strftime` format      |
+|                                     |                   | %d/%b/%Y:%H:%M:%S %z.                              |
+|                                     |                   | (for example, `10/Oct/2000:13:55:36 -0700`)        |
+|                                     |                   | Refer to :ref:`timestamp-format` for more          |
+|                                     |                   | information.                                       |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%r`                                | Yes               | the request line from the client                   |
+|                                     |                   | (for example, `GET /path h2`)                      |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%s`                                | No                | the HTTP status code returned to the client        |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%b`                                | Yes               | the size of the object returned to the client,     |
+|                                     |                   | measured in bytes                                  |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%{HEADER_NAME}i`                   | Yes               | the value of the specified HTTP request header     |
+|                                     |                   | name                                               |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%{HEADER_NAME}o`                   | Yes               | the value of the specified HTTP response header    |
+|                                     |                   | name                                               |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%{ATTRIBUTE_NAME}j`                | Yes               | the value of the specified attribute name          |
++-------------------------------------+-------------------+----------------------------------------------------+
+| `%{REQUEST_LOG_NAME}L`              | Yes               | the value of the specified variable of the         |
+|                                     |                   | <type://RequestLog>. Refer to :ref:`request-log`   |
+|                                     |                   | for more information.                              |
++-------------------------------------+-------------------+----------------------------------------------------+
 
 Some tokens can have a condition of the response status code and the log message can be omitted with
 the condition.
 
-+---------------------------------------------------+------------------------------------------------+
-| Example of a condition                            | Description                                    |
-+===================================================+================================================+
-| `%200b`                                           | Write the size of the object returned to the   |
-|                                                   | client only if the response code is `200`.     |
-+---------------------------------------------------+------------------------------------------------+
-| `%200,304{User-Agent}i`                           | Write `User-Agent` header value only if the    |
-|                                                   | response code is `200` or `304`.               |
-+---------------------------------------------------+------------------------------------------------+
-| `%!200,304{com.example.armeria.Attribute#KEY}j`   | Write the value of the specified attribute     |
-|                                                   | only if the response code is neither `200`     |
-|                                                   | nor `304`.                                     |
-+---------------------------------------------------+------------------------------------------------+
++-----------------------------------------------------+------------------------------------------------+
+|<div style="width:25rem">Example of a condition</div>| Description                                    |
++=====================================================+================================================+
+| `%200b`                                             | Write the size of the object returned to the   |
+|                                                     | client only if the response code is `200`.     |
++-----------------------------------------------------+------------------------------------------------+
+| `%200,304{User-Agent}i`                             | Write `User-Agent` header value only if the    |
+|                                                     | response code is `200` or `304`.               |
++-----------------------------------------------------+------------------------------------------------+
+| `%!200,304{com.example.armeria.Attribute#KEY}j`     | Write the value of the specified attribute     |
+|                                                     | only if the response code is neither `200`     |
+|                                                     | nor `304`.                                     |
++-----------------------------------------------------+------------------------------------------------+
 
 ### Retrieving values from `RequestLog`
 
@@ -210,68 +210,68 @@ the condition.
 her access log file. To write them in a simple way, `%{variable}L` token is provided with the following
 supported variable:
 
-+-------------------------------+--------------------------------------------------------------------+
-| Name                          | Description                                                        |
-+===============================+====================================================================+
-| `method`                      | the HTTP method value of the request                               |
-+-------------------------------+--------------------------------------------------------------------+
-| `path`                        | the absolute path part of the HTTP request URI                     |
-+-------------------------------+--------------------------------------------------------------------+
-| `query`                       | the query part of the HTTP request URI                             |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestStartTimeMillis`      | the time when the processing of the request started,               |
-|                               | in milliseconds since the epoch                                    |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestDurationMillis`       | the duration that was taken to consume or produce the request      |
-|                               | completely, in milliseconds                                        |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestDurationNanos`        | the duration that was taken to consume or produce the request      |
-|                               | completely, in nanoseconds                                         |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestLength`               | the length of the request content                                  |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestCause`                | the cause of request processing failure. The class name of the     |
-|                               | cause and the detail message of it will be contained if exists.    |
-+-------------------------------+--------------------------------------------------------------------+
-| `requestContentPreview`       | the preview of the request content                                 |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseStartTimeMillis`     | the time when the processing of the response started,              |
-|                               | in milliseconds since the epoch                                    |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseDurationMillis`      | the duration that was taken to consume or produce the response     |
-|                               | completely, in milliseconds                                        |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseDurationNanos`       | the duration that was taken to consume or produce the response     |
-|                               | completely, in nanoseconds                                         |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseLength`              | the length of the response content                                 |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseCause`               | the cause of response processing failure. The class name of the    |
-|                               | cause and the detail message of it will be contained if exists.    |
-+-------------------------------+--------------------------------------------------------------------+
-| `responseContentPreview`      | the preview of the response content                                |
-+-------------------------------+--------------------------------------------------------------------+
-| `totalDurationMillis`         | the amount of time taken since the request processing started and  |
-|                               | until the response processing ended, in milliseconds               |
-+-------------------------------+--------------------------------------------------------------------+
-| `totalDurationNanos`          | the amount of time taken since the request processing started and  |
-|                               | until the response processing ended, in nanoseconds                |
-+-------------------------------+--------------------------------------------------------------------+
-| `sessionProtocol`             | the session protocol of the request.                               |
-|                               | e.g. `h1`, `h2`, `h1c` or `h2c`                                    |
-+-------------------------------+--------------------------------------------------------------------+
-| `serializationFormat`         | the serialization format of the request.                           |
-|                               | e.g. `tbinary`, `ttext`, `tcompact`, `tjson` or `none`             |
-+-------------------------------+--------------------------------------------------------------------+
-| `scheme`                      | the scheme value printed as `serializationFormat+sessionProtocol`  |
-+-------------------------------+--------------------------------------------------------------------+
-| `host`                        | the host name of the request                                       |
-+-------------------------------+--------------------------------------------------------------------+
-| `status`                      | the status code and its reason phrase of the response.             |
-|                               | e.g. `200 OK`                                                      |
-+-------------------------------+--------------------------------------------------------------------+
-| `statusCode`                  | the status code of the response. e.g. `200`                        |
-+-------------------------------+--------------------------------------------------------------------+
++-----------------------------------+--------------------------------------------------------------------+
+|<div style="width:13rem">Name</div>| Description                                                        |
++===================================+===============================================================+
+| `method`                          | the HTTP method value of the request                               |
++-----------------------------------+--------------------------------------------------------------------+
+| `path`                            | the absolute path part of the HTTP request URI                     |
++-----------------------------------+--------------------------------------------------------------------+
+| `query`                           | the query part of the HTTP request URI                             |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestStartTimeMillis`          | the time when the processing of the request started,               |
+|                                   | in milliseconds since the epoch                                    |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestDurationMillis`           | the duration that was taken to consume or produce the request      |
+|                                   | completely, in milliseconds                                        |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestDurationNanos`            | the duration that was taken to consume or produce the request      |
+|                                   | completely, in nanoseconds                                         |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestLength`                   | the length of the request content                                  |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestCause`                    | the cause of request processing failure. The class name of the     |
+|                                   | cause and the detail message of it will be contained if exists.    |
++-----------------------------------+--------------------------------------------------------------------+
+| `requestContentPreview`           | the preview of the request content                                 |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseStartTimeMillis`         | the time when the processing of the response started,              |
+|                                   | in milliseconds since the epoch                                    |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseDurationMillis`          | the duration that was taken to consume or produce the response     |
+|                                   | completely, in milliseconds                                        |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseDurationNanos`           | the duration that was taken to consume or produce the response     |
+|                                   | completely, in nanoseconds                                         |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseLength`                  | the length of the response content                                 |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseCause`                   | the cause of response processing failure. The class name of the    |
+|                                   | cause and the detail message of it will be contained if exists.    |
++-----------------------------------+--------------------------------------------------------------------+
+| `responseContentPreview`          | the preview of the response content                                |
++-----------------------------------+--------------------------------------------------------------------+
+| `totalDurationMillis`             | the amount of time taken since the request processing started and  |
+|                                   | until the response processing ended, in milliseconds               |
++-----------------------------------+--------------------------------------------------------------------+
+| `totalDurationNanos`              | the amount of time taken since the request processing started and  |
+|                                   | until the response processing ended, in nanoseconds                |
++-----------------------------------+--------------------------------------------------------------------+
+| `sessionProtocol`                 | the session protocol of the request.                               |
+|                                   | e.g. `h1`, `h2`, `h1c` or `h2c`                                    |
++-----------------------------------+--------------------------------------------------------------------+
+| `serializationFormat`             | the serialization format of the request.                           |
+|                                   | e.g. `tbinary`, `ttext`, `tcompact`, `tjson` or `none`             |
++-----------------------------------+--------------------------------------------------------------------+
+| `scheme`                          | the scheme value printed as `serializationFormat+sessionProtocol`  |
++-----------------------------------+--------------------------------------------------------------------+
+| `host`                            | the host name of the request                                       |
++-----------------------------------+--------------------------------------------------------------------+
+| `status`                          | the status code and its reason phrase of the response.             |
+|                                   | e.g. `200 OK`                                                      |
++-----------------------------------+--------------------------------------------------------------------+
+| `statusCode`                      | the status code of the response. e.g. `200`                        |
++-----------------------------------+--------------------------------------------------------------------+
 
 ### Customizing timestamp format
 
