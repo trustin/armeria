@@ -70,9 +70,6 @@ module.exports = {
             ),
             options: {
               strategy: 'img',
-              bob: {
-                fontFamily: 'Hack',
-              },
               mermaid: {
                 theme: 'neutral',
                 backgroundColor: 'transparent',

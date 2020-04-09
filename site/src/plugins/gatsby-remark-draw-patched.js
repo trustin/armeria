@@ -21,37 +21,37 @@ module.exports = ({ markdownAST, pathPrefix }, pluginOptions = {}) => {
       return;
     }
 
-    if (pluginOptions.strategy === 'img') {
-      const svg = draw
-        .render(lang, node.value, pluginOptions)
-        .value.replace(
-          /(<style[^>]*>)/,
-          "$1\n@import url('https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack-subset.css');\n",
-        );
+    const svg = draw
+      .render(lang, node.value, pluginOptions)
+      .value.replace(
+        /(<style[^>]*>)/,
+        "$1\n@import url('https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack-subset.css');\n* { font-family: Hack; font-size: 13px; }\n",
+      );
 
-      if (!svg.includes('hack-subset.css')) {
-        throw new Error(`Failed to inject the font CSS: ${svg}`);
-      }
-
-      const hash = crypto
-        .createHmac('sha1', 'gatsby-remark-draw')
-        .update(svg)
-        .digest('hex');
-      const fileName = `${hash}.svg`;
-      const fullPath = path.join(DEPLOY_DIR, fileName);
-      fs.writeFileSync(fullPath, svg);
-
-      const image = {
-        type: 'html',
-        value: `<span class="${draw.className} ${
-          draw.className
-        }-${lang}"><img src="${urljoin('/', pathPrefix, fileName)}" /></span>`,
-      };
-
-      parent.children.splice(index, 1, image);
-    } else {
-      throw new Error(`strategy must be 'img': ${pluginOptions.strategy}`);
+    if (!svg.includes('hack-subset.css')) {
+      throw new Error(`Failed to inject the font CSS: ${svg}`);
     }
+
+    const hash = crypto
+      .createHmac('sha1', 'gatsby-remark-draw')
+      .update(svg)
+      .digest('hex');
+    const fileName = `${hash}.svg`;
+    const fullPath = path.join(DEPLOY_DIR, fileName);
+    fs.writeFileSync(fullPath, svg);
+
+    const image = {
+      type: 'html',
+      value: `<span class="${draw.className} ${
+        draw.className
+      }-${lang}"><object data="${urljoin(
+        '/',
+        pathPrefix,
+        fileName,
+      )}" role="img" aria-label="" /></span>`,
+    };
+
+    parent.children.splice(index, 1, image);
   });
 
   return markdownAST;
