@@ -215,6 +215,8 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   const tocStateRef = React.useRef(tocState);
   tocStateRef.current = tocState;
 
+  const showSearch = typeof window === 'undefined' || window.innerWidth > 768;
+
   function findCurrentMdxNode(): any {
     const path = props.location.pathname;
     const prefix = '/docs';
@@ -370,7 +372,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
               <nav>
                 <div className={styles.pageToC} />
                 <Select
-                  showSearch
+                  showSearch={showSearch}
                   placeholder="Jump to other page"
                   onChange={value => {
                     navigate(`${value}`);
