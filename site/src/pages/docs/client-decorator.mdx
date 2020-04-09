@@ -159,8 +159,7 @@ cb.decorator(DecodingClient.newDecorator());
 cb.decorator(ContentPreviewingClient.newDecorator(1000));
 ```
 
-<type://DecodingClient> decodes the content of HTTP responses.
-<type://ContentPreviewingClient> is 
+<type://DecodingClient> decodes the content of HTTP responses. <type://ContentPreviewingClient> is 
 [Enabling content previews](/docs/advanced-structured-logging#enabling-content-previews)
 of the HTTP response by setting it to the <type://RequestLog>. 
 Because it's evaluated after <type://DecodingClient> from the point of view of an
