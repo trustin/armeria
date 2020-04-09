@@ -6,7 +6,12 @@ interface MaxWidthProps {
 
 const MaxWidth: React.FC<MaxWidthProps> = props => (
   <div
-    style={{ maxWidth: props.value, marginLeft: 'auto', marginRight: 'auto' }}
+    style={{
+      maxWidth:
+        typeof props.value === 'number' ? `${props.value}px` : props.value,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    }}
   >
     {props.children}
   </div>
