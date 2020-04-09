@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { MDXProvider } from '@mdx-js/react';
 import { History, HistoryLocation } from '@reach/router';
-import { Button, Divider, Input, Layout, Select } from 'antd';
+import { Button, Divider, Layout, Select } from 'antd';
 import { graphql, Link, navigate, useStaticQuery, withPrefix } from 'gatsby';
 import { OutboundLink } from 'gatsby-plugin-google-analytics';
 import React from 'react';
