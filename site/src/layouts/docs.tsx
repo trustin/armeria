@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { MDXProvider } from '@mdx-js/react';
 import { History, HistoryLocation } from '@reach/router';
-import { Button, Divider, Layout, Select } from 'antd';
+import { Button, Layout, Select } from 'antd';
 import { graphql, Link, navigate, useStaticQuery, withPrefix } from 'gatsby';
 import { OutboundLink } from 'gatsby-plugin-google-analytics';
 import React from 'react';
@@ -210,6 +210,11 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   }
 
   const currentMdxNode = findCurrentMdxNode();
+  const pageTitle = `${
+    currentMdxNode !== mdxNodes[0]
+      ? `${currentMdxNode.tableOfContents.items[0].title} - `
+      : ''
+  }Armeria documentation`;
 
   const [tocState, setTocState] = React.useState(ToCState.CLOSED);
   const tocStateRef = React.useRef(tocState);
@@ -246,18 +251,6 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
     }
 
     return mdxNodes[0];
-  }
-
-  function renderButton(
-    node: any,
-    className: string,
-    children: React.ReactNode,
-  ) {
-    return (
-      <Link className={className} to={node.href}>
-        <Button>{children}</Button>
-      </Link>
-    );
   }
 
   function toggleToC() {
@@ -312,7 +305,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   return (
     <MDXProvider components={mdxComponents}>
       <BaseLayout
-        pageTitle={`${currentMdxNode.tableOfContents.items[0].title} — Armeria documentation`}
+        pageTitle={pageTitle}
         history={props.history}
         location={props.location}
       >
@@ -326,25 +319,38 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
                     <GithubOutlined /> Edit on GitHub
                   </OutboundLink>
                 </div>
-                <Divider />
-                {currentMdxNode.prevNodeName
-                  ? renderButton(
-                      nameToMdxNode[currentMdxNode.prevNodeName],
-                      styles.prevButton,
-                      <>
-                        <LeftOutlined /> Prev
-                      </>,
-                    )
-                  : []}
-                {currentMdxNode.nextNodeName
-                  ? renderButton(
-                      nameToMdxNode[currentMdxNode.nextNodeName],
-                      styles.nextButton,
-                      <>
-                        Next <RightOutlined />
-                      </>,
-                    )
-                  : []}
+                {currentMdxNode.prevNodeName ? (
+                  <Link
+                    className={styles.prevButton}
+                    to={nameToMdxNode[currentMdxNode.prevNodeName].href}
+                  >
+                    <Button>
+                      <LeftOutlined />{' '}
+                      {
+                        nameToMdxNode[currentMdxNode.prevNodeName]
+                          .tableOfContents.items[0].title
+                      }
+                    </Button>
+                  </Link>
+                ) : (
+                  ''
+                )}
+                {currentMdxNode.nextNodeName ? (
+                  <Link
+                    className={styles.nextButton}
+                    to={nameToMdxNode[currentMdxNode.nextNodeName].href}
+                  >
+                    <Button>
+                      <RightOutlined />
+                      {
+                        nameToMdxNode[currentMdxNode.nextNodeName]
+                          .tableOfContents.items[0].title
+                      }{' '}
+                    </Button>
+                  </Link>
+                ) : (
+                  ''
+                )}
               </div>
             </Content>
           </div>

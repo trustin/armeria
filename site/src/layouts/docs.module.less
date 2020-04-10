@@ -95,19 +95,41 @@
   }
 
   .footer {
-    height: 7rem;
+    &::after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    .footerElement {
+      max-width: 100%;
+      margin: 1rem 0 0;
+
+      button {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
 
     .editOnGitHub {
+      .footerElement;
       text-align: right;
-      margin-top: 1rem;
     }
 
     .prevButton {
+      .footerElement;
       float: left;
     }
 
     .nextButton {
+      .footerElement;
       float: right;
+
+      button {
+        // To make ellipsis appear on the left side:
+        direction: rtl;
+      }
     }
   }
 
@@ -255,7 +277,6 @@
     display: inline-block;
     height: inherit;
     left: 0;
-    margin-top: -1px;
     position: absolute;
     width: 2px;
   }
@@ -280,7 +301,7 @@
 
   :global(.ant-select) {
     @media (max-width: @screen-sm-max) {
-      margin: 0 @margin-md @margin-md ;
+      margin: 0 @margin-md @margin-md;
       width: calc(100% - @margin-md * 2);
     }
 
