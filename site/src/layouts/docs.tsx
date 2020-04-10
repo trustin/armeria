@@ -336,12 +336,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
                             }`;
                             return (
                               <li key={href}>
-                                <Link to={href}>
-                                  {tocItem !==
-                                  mdxNodes[0].tableOfContents.items[0]
-                                    ? tocItem.title
-                                    : 'Home'}
-                                </Link>
+                                <Link to={href}>{tocItem.title}</Link>
                               </li>
                             );
                           },
@@ -472,9 +467,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
                             key={mdxNode.href}
                             value={mdxNode.href}
                           >
-                            {mdxNode !== mdxNodes[0]
-                              ? mdxNode.tableOfContents.items[0].title
-                              : 'Home'}
+                            {mdxNode.tableOfContents.items[0].title}
                           </Select.Option>
                         ));
                       }

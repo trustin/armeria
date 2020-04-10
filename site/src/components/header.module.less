@@ -7,11 +7,6 @@
   width: 100%;
   overflow: hidden;
   padding: 0 @padding-lg;
-
-  // Add space for Github corners.
-  @media (min-width: @screen-md-min) {
-    padding-right: 80px;
-  }
 }
 
 .header {
@@ -41,6 +36,11 @@
   text-align: right;
   overflow: hidden;
   background-color: @armeria-darkgray;
+
+  // Add space for Github corners.
+  @media (min-width: @screen-md-min) {
+    padding-right: 80px;
+  }
 }
 
 :global(.ant-menu) {
