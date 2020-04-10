@@ -164,7 +164,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
 
   React.useLayoutEffect(() => {
     tocbot.init({
-      tocSelector: `.${styles.pageToC}`,
+      tocSelector: `.${styles.pageToc}`,
       contentSelector: `.${styles.content}`,
       headingSelector: 'h1, h2, h3, h4',
     });
@@ -193,21 +193,33 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
 
   // Create a list of MDX pages, ordered as specified in 'docs/index.json'.
   const mdxNodes: any[] = [];
+  const groupToMdxNodes: { [group: string]: any[] } = {};
   let prevMdxNode: any;
-  for (let i = 0; i < docsIndex.length; i += 1) {
-    const name = docsIndex[i];
-    const mdxNode = nameToMdxNode[name];
-    if (mdxNode) {
-      mdxNodes.push(mdxNode);
-      if (prevMdxNode) {
-        // Note: Do not refer to 'prevMdxNode' or 'mdxNode' directly here,
-        //       to avoid creating cyclic references.
-        mdxNode.prevNodeName = prevMdxNode.parent.name;
-        prevMdxNode.nextNodeName = name;
+  Object.entries(docsIndex).forEach(([group, groupIndex]) => {
+    for (let i = 0; i < groupIndex.length; i += 1) {
+      const name = groupIndex[i];
+      const mdxNode = nameToMdxNode[name];
+      if (mdxNode) {
+        mdxNodes.push(mdxNode);
+
+        // Group MDX nodes by its group.
+        const groupedMdxNodes = groupToMdxNodes[group];
+        if (groupedMdxNodes) {
+          groupedMdxNodes.push(mdxNode);
+        } else {
+          groupToMdxNodes[group] = [mdxNode];
+        }
+
+        if (prevMdxNode) {
+          // Note: Do not refer to 'prevMdxNode' or 'mdxNode' directly here,
+          //       to avoid creating cyclic references.
+          mdxNode.prevNodeName = prevMdxNode.parent.name;
+          prevMdxNode.nextNodeName = name;
+        }
+        prevMdxNode = mdxNode;
       }
-      prevMdxNode = mdxNode;
     }
-  }
+  });
 
   const currentMdxNode = findCurrentMdxNode();
   const pageTitle = `${
@@ -277,7 +289,7 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
   }
 
   // Style functions for fading in/out table of contents.
-  function tocWrapperStyle(): React.CSSProperties {
+  function pageTocWrapperStyle(): React.CSSProperties {
     switch (tocState) {
       case ToCState.OPENING:
         return {
@@ -310,6 +322,69 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
         location={props.location}
       >
         <div className={styles.wrapper}>
+          <div className={styles.globalTocWrapper}>
+            <nav>
+              <ol>
+                {Object.entries(groupToMdxNodes).map(
+                  ([group, groupedMdxNodes]) => {
+                    function renderMdxNodes() {
+                      return groupedMdxNodes.flatMap(mdxNode => {
+                        return mdxNode.tableOfContents.items.map(
+                          (tocItem: any, i: number) => {
+                            const href = `${mdxNode.href}${
+                              i !== 0 ? tocItem.url : ''
+                            }`;
+                            return (
+                              <li key={href}>
+                                <Link to={href}>
+                                  {tocItem !==
+                                  mdxNodes[0].tableOfContents.items[0]
+                                    ? tocItem.title
+                                    : 'Home'}
+                                </Link>
+                              </li>
+                            );
+                          },
+                        );
+                      });
+                    }
+
+                    if (group === 'root') {
+                      return [
+                        ...renderMdxNodes(),
+                        <li key="group-references" className={styles.tocGroup}>
+                          <span className={styles.tocGroupLabel}>
+                            REFERENCES
+                          </span>
+                          <ol>
+                            <li>
+                              <OutboundLink href="https://github.com/line/armeria/releases">
+                                Release notes
+                              </OutboundLink>
+                            </li>
+                            <li>
+                              <OutboundLink href="https://javadoc.io/doc/com.linecorp.armeria/armeria-javadoc">
+                                API documentation
+                              </OutboundLink>
+                            </li>
+                          </ol>
+                        </li>,
+                      ];
+                    }
+
+                    return (
+                      <li key={`group-${group}`} className={styles.tocGroup}>
+                        <span className={styles.tocGroupLabel}>
+                          {group.toUpperCase()}
+                        </span>
+                        <ol>{renderMdxNodes()}</ol>
+                      </li>
+                    );
+                  },
+                )}
+              </ol>
+            </nav>
+          </div>
           <div className={styles.content}>
             <Content className="ant-typography" role="main">
               {props.children}
@@ -366,37 +441,57 @@ const DocsLayout: React.FC<DocsLayoutProps> = props => {
             </StickyBox>
           </div>
           <div
-            className={styles.tocWrapper}
-            style={tocWrapperStyle()}
+            className={styles.pageTocWrapper}
+            style={pageTocWrapperStyle()}
             role="directory"
           >
             <StickyBox
               offsetTop={24}
               offsetBottom={24}
-              className={styles.tocShadow}
+              className={styles.pageTocShadow}
             >
               <nav>
-                <div className={styles.pageToC} />
+                <div className={styles.pageToc} />
                 <Select
                   showSearch={showSearch}
                   placeholder="Jump to other page"
-                  onChange={value => {
-                    navigate(`${value}`);
+                  onChange={href => {
+                    navigate(`${href}`);
                   }}
                   filterOption={(input, option) =>
                     option.children
-                      .toLowerCase()
+                      ?.toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {mdxNodes.map(e =>
-                    e !== currentMdxNode ? (
-                      <Select.Option key={e.href} value={e.href}>
-                        {e.tableOfContents.items[0].title}
-                      </Select.Option>
-                    ) : (
-                      ''
-                    ),
+                  {Object.entries(groupToMdxNodes).map(
+                    ([group, groupedMdxNodes]) => {
+                      function renderMdxNodes() {
+                        return groupedMdxNodes.map(mdxNode => (
+                          <Select.Option
+                            key={mdxNode.href}
+                            value={mdxNode.href}
+                          >
+                            {mdxNode !== mdxNodes[0]
+                              ? mdxNode.tableOfContents.items[0].title
+                              : 'Home'}
+                          </Select.Option>
+                        ));
+                      }
+
+                      if (group === 'root') {
+                        return renderMdxNodes();
+                      }
+
+                      return (
+                        <Select.OptGroup
+                          key={`group-${group}`}
+                          label={group.toUpperCase()}
+                        >
+                          {renderMdxNodes()}
+                        </Select.OptGroup>
+                      );
+                    },
                   )}
                 </Select>
               </nav>

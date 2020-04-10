@@ -1,11 +1,5 @@
 @import '../../node_modules/antd/es/style/themes/default.less';
 
-@sider-width: 308px;
-@sider-height: 100vh;
-@min-content-height: calc(
-  100vh - @layout-header-height - /* footer height */ 112px - @margin-md * 2
-);
-
 .wrapper {
   width: 100%;
   background: white;
@@ -19,8 +13,248 @@
   @media (min-width: @screen-md-min) {
     display: flex;
     align-items: stretch;
+    justify-content: center;
     margin: 16px auto;
-    max-width: @screen-xl;
+    max-width: @layout-max-width;
+  }
+}
+
+.globalTocWrapper {
+  padding: @padding-lg @padding-xl;
+
+  // Hide the global ToC if < 1200px.
+  @media (max-width: @screen-lg-max) {
+    display: none;
+  }
+
+  @media (min-width: @screen-xl-min) {
+    flex-basis: @layout-sidebar-width;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  a {
+    color: @text-color;
+    &:active {
+      color: @link-active-color;
+    }
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+
+  nav ol {
+    margin: 0;
+    padding-left: 0;
+
+    li {
+      list-style: none;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      width: @layout-sidebar-width - @padding-xl * 2;
+      li {
+        width: @layout-sidebar-width - @padding-xl * 2;
+        li {
+          width: @layout-sidebar-width - @padding-xl * 2 - @padding-md;
+          li {
+            width: @layout-sidebar-width - @padding-xl * 2 - @padding-md * 2;
+          }
+        }
+      }
+    }
+  }
+
+  .tocGroup {
+    margin-top: @margin-lg;
+
+    .tocGroupLabel {
+      display: block;
+      width: @layout-sidebar-width - @padding-xl * 2;
+      overflow: hidden;
+      font-weight: bold;
+      margin-bottom: @margin-xs;
+
+      &::after {
+        content: '⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯';
+        position: relative;
+        margin-left: @margin-xs;
+        top: 1px;
+        color: @border-color-base;
+      }
+    }
+  }
+}
+
+.tocButton {
+  // Show a floating ToC show/hide button for single-column layout.
+  @media (max-width: @screen-sm-max) {
+    position: absolute;
+    z-index: @zindex-back-top - 1;
+    top: 0;
+    right: 0;
+    left: calc(100% - 80px);
+    bottom: 0;
+    margin: @margin-lg @margin-md;
+    text-align: right;
+  }
+
+  // Do not show a ToC show/hide button for double-column layout.
+  @media (min-width: @screen-md-min) {
+    display: none;
+  }
+}
+
+.pageTocShadow {
+  @media (max-width: @screen-sm-max) {
+    box-shadow: @box-shadow-base;
+  }
+}
+
+.pageTocWrapper {
+  padding: @padding-lg @padding-md @padding-lg 0;
+
+  @media (max-width: @screen-sm-max) {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0;
+
+    width: calc(100% - 2rem);
+    max-width: calc(100% - 2rem);
+    padding-right: 0;
+
+    transition-property: opacity;
+    transition-duration: 0.3s;
+
+    // These two properties are overridden dynamically.
+    display: none;
+    opacity: 0;
+
+    nav {
+      background: white;
+      padding-top: 1rem;
+    }
+  }
+
+  @media (min-width: @screen-md-min) {
+    flex-basis: @layout-sidebar-width;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .pageToc {
+    > :global(.toc-list) {
+      overflow: hidden;
+      position: relative;
+      font-weight: bold;
+      font-size: @font-size-base;
+
+      @media (max-width: @screen-sm-max) {
+        padding-left: @padding-md;
+      }
+
+      @media (min-width: @screen-md-min) {
+        padding-left: @padding-xl;
+      }
+
+      :global(.toc-list) {
+        margin: 0;
+        padding-left: 0;
+        font-weight: normal;
+
+        :global(.toc-list) {
+          padding-left: @padding-md;
+          font-size: @font-size-sm;
+        }
+      }
+    }
+  }
+
+  li {
+    list-style: none;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (max-width: @screen-sm-max) {
+      width: calc(100vw - 64px);
+      li {
+        width: calc(100vw - 64px);
+        li {
+          width: calc(100vw - 64px - @padding-md);
+          li {
+            width: calc(100vw - 64px - @padding-md * 2);
+          }
+        }
+      }
+    }
+
+    @media (min-width: @screen-md-min) {
+      width: @layout-sidebar-width - @padding-xl * 2;
+      li {
+        width: @layout-sidebar-width - @padding-xl * 2;
+        li {
+          width: @layout-sidebar-width - @padding-xl * 2 - @padding-md;
+          li {
+            width: @layout-sidebar-width - @padding-xl * 2 - @padding-md * 2;
+          }
+        }
+      }
+    }
+  }
+
+  :global(.toc-link) {
+    color: @text-color;
+    height: 100%;
+
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+
+  :global(.toc-link::before) {
+    background-color: @border-color-base;
+    content: ' ';
+    display: inline-block;
+    height: inherit;
+    left: 0;
+    position: absolute;
+    width: 2px;
+  }
+
+  :global(.is-active-link::before) {
+    background-color: @armeria-magenta;
+  }
+
+  :global(.is-collapsible) {
+    max-height: 1000px;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+  }
+
+  :global(.is-collapsed) {
+    max-height: 0;
+  }
+
+  :global(.is-active-link) {
+    font-weight: bold;
+  }
+
+  :global(.ant-select) {
+    @media (max-width: @screen-sm-max) {
+      margin: 0 @margin-md @margin-md;
+      width: calc(100% - @margin-md * 2);
+    }
+
+    @media (min-width: @screen-md-min) {
+      margin: 0 0 0 @margin-xl;
+      width: @layout-sidebar-width - @margin-xl * 2;
+    }
   }
 }
 
@@ -30,13 +264,19 @@
 
   @media (min-width: @screen-md-min) {
     flex-grow: 1;
-    max-width: calc(100vw - @sider-width);
-    min-height: calc(100vh - @layout-header-height - 112px - @margin-md * 2);
+    max-width: calc(100vw - @layout-sidebar-width);
+    min-height: calc(100vh - @layout-header-height - 112px - @margin-md);
   }
 
   @media (min-width: @screen-xl-min) {
-    width: @screen-xl-min - @sider-width;
-    max-width: @screen-xl-min - @sider-width;
+    flex-grow: 1;
+    max-width: calc(100vw - @layout-sidebar-width * 2);
+    min-height: calc(100vh - @layout-header-height - 112px - @margin-md * 2);
+  }
+
+  @media (min-width: @layout-max-width) {
+    width: @screen-xl-min;
+    max-width: @screen-xl-min;
   }
 
   :global(.anchor) {
@@ -149,175 +389,5 @@
     margin: 1rem 0;
     max-width: 100%;
     overflow: auto;
-  }
-}
-
-.tocButton {
-  // Show a floating ToC show/hide button for single-column layout.
-  @media (max-width: @screen-sm-max) {
-    position: absolute;
-    z-index: @zindex-back-top - 1;
-    top: 0;
-    right: 0;
-    left: calc(100% - 80px);
-    bottom: 0;
-    margin: @margin-lg @margin-md;
-    text-align: right;
-  }
-
-  // Do not show a ToC show/hide button for double-column layout.
-  @media (min-width: @screen-md-min) {
-    display: none;
-  }
-}
-
-.tocShadow {
-  @media (max-width: @screen-sm-max) {
-    box-shadow: @box-shadow-base;
-  }
-}
-
-.tocWrapper {
-  padding: @padding-lg 16px @padding-lg 0;
-
-  @media (max-width: @screen-sm-max) {
-    position: absolute;
-    top: 0;
-    left: 1rem;
-    right: 1rem;
-    bottom: 0;
-
-    width: calc(100% - 2rem);
-    max-width: calc(100% - 2rem);
-    padding-right: 0;
-
-    transition-property: opacity;
-    transition-duration: 0.3s;
-
-    // These two properties are overridden dynamically.
-    display: none;
-    opacity: 0;
-
-    nav {
-      background: white;
-      padding-top: 1rem;
-    }
-  }
-
-  @media (min-width: @screen-md-min) {
-    flex-basis: @sider-width;
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-
-  .pageToC {
-    > :global(.toc-list) {
-      overflow: hidden;
-      position: relative;
-      font-weight: bold;
-      font-size: @font-size-base;
-
-      @media (max-width: @screen-sm-max) {
-        padding-left: @padding-md;
-      }
-
-      @media (min-width: @screen-md-min) {
-        padding-left: @padding-xl;
-      }
-
-      :global(.toc-list) {
-        margin: 0;
-        padding-left: 0;
-        font-weight: normal;
-
-        :global(.toc-list) {
-          padding-left: @padding-md;
-          font-size: @font-size-sm;
-        }
-      }
-    }
-  }
-
-  li {
-    list-style: none;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    @media (max-width: @screen-sm-max) {
-      width: calc(100vw - 64px);
-      li {
-        width: calc(100vw - 64px);
-        li {
-          width: calc(100vw - 64px - @padding-md);
-          li {
-            width: calc(100vw - 64px - @padding-md * 2);
-          }
-        }
-      }
-    }
-
-    @media (min-width: @screen-md-min) {
-      width: @sider-width - @padding-xl * 2;
-      li {
-        width: @sider-width - @padding-xl * 2;
-        li {
-          width: @sider-width - @padding-xl * 2 - @padding-md;
-          li {
-            width: @sider-width - @padding-xl * 2 - @padding-md * 2;
-          }
-        }
-      }
-    }
-  }
-
-  :global(.toc-link) {
-    color: @text-color;
-    height: 100%;
-
-    &:hover {
-      color: @link-hover-color;
-    }
-  }
-
-  :global(.toc-link::before) {
-    background-color: @border-color-base;
-    content: ' ';
-    display: inline-block;
-    height: inherit;
-    left: 0;
-    position: absolute;
-    width: 2px;
-  }
-
-  :global(.is-active-link::before) {
-    background-color: @armeria-magenta;
-  }
-
-  :global(.is-collapsible) {
-    max-height: 1000px;
-    overflow: hidden;
-    transition: all 0.5s ease-in-out;
-  }
-
-  :global(.is-collapsed) {
-    max-height: 0;
-  }
-
-  :global(.is-active-link) {
-    font-weight: bold;
-  }
-
-  :global(.ant-select) {
-    @media (max-width: @screen-sm-max) {
-      margin: 0 @margin-md @margin-md;
-      width: calc(100% - @margin-md * 2);
-    }
-
-    @media (min-width: @screen-md-min) {
-      margin: 0 0 0 @margin-xl;
-      width: @sider-width - @margin-xl * 2;
-    }
   }
 }

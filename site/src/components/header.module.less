@@ -6,27 +6,33 @@
   background: @layout-header-background;
   width: 100%;
   overflow: hidden;
+  padding: 0 @padding-lg;
+
+  // Add space for Github corners.
+  @media (min-width: @screen-md-min) {
+    padding-right: 80px;
+  }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   margin: 0 auto;
+  max-width: 100%;
 
   @media (max-width: @screen-sm-max) {
-    max-width: calc(100% - 0.5rem);
+    width: 100%;
   }
 
   @media (min-width: @screen-md-min) {
-    width: @screen-xl;
-    max-width: 100%;
+    width: @layout-max-width;
   }
 }
 
 .logo {
   flex-grow: 0;
   height: @layout-header-height;
-  margin-right: 1rem;
+  margin-right: 2.5rem;
 }
 
 .menu {

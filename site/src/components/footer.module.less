@@ -7,7 +7,7 @@
   width: 100%;
   overflow: hidden;
   background-color: @layout-footer-background;
-  padding: 0 1.5rem;
+  padding: 0 @padding-lg;
 
   :global(.ant-typography), div {
     color: @text-color-dark;
@@ -28,7 +28,7 @@
     }
 
     @media (min-width: @screen-md-min) {
-      width: @screen-xl;
+      width: @layout-max-width;
     }
 
     .newsletterForm {
