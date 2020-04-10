@@ -13,7 +13,7 @@ by [LINE Corporation](https://linecorp.com/en/), who uses it in production.
 ## Requirements
 
 [Java 8 or later](https://adoptopenjdk.net/).
-See [Requirements](https://line.github.io/armeria/setup.html#requirements) for more information.
+See [Requirements](https://line.github.io/armeria/docs/setup#requirements) for more information.
 
 ## How to build
 
