@@ -213,9 +213,9 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 public class MyHelloService extends HelloServiceGrpc.HelloServiceImplBase {
     @Override
     public void hello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-        ServiceRequestContext ctx = (ServiceRequestContext) RequestContext.current();
-        ctx.blockingTaskExecutor().submit(() -> {
-            Thread.sleep(10000);
+        ServiceRequestContext.current().blockingTaskExecutor().submit(() -> {
+            // Perform a long-running task.
+
             HelloReply reply = HelloReply.newBuilder()
                                          .setMessage("Hello, " + req.getName() + '!')
                                          .build();
@@ -225,6 +225,7 @@ public class MyHelloService extends HelloServiceGrpc.HelloServiceImplBase {
     }
 }
 ```
+
 ```java
 import com.linecorp.armeria.common.RequestContext;
 import com.linecorp.armeria.server.ServiceRequestContext;
@@ -232,7 +233,8 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 public class MyHelloService extends HelloServiceGrpc.HelloServiceImplBase {
     @Override
     public void hello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-        Thread.sleep(10000);
+        // Perform a long-running task.
+
         HelloReply reply = HelloReply.newBuilder()
                                      .setMessage("Hello, " + req.getName() + '!')
                                      .build();
@@ -278,7 +280,7 @@ server.start();
 For more information, see the official [gRPC Server Reflection tutorial](https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md).
 
 ## See also
-[Client gRPC](/docs/client-grpc)
+- [Client gRPC](/docs/client-grpc)
 
 [gRPC]: https://grpc.io/
 [gRPC-Web]: https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-WEB.md

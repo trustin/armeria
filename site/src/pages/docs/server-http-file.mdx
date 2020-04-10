@@ -57,10 +57,10 @@ FileServiceBuilder fsb =
         FileService.builder(Paths.get("/var/lib/www/images"));
 
 // Specify cache control directives.
-ServerCacheControl cc = new ServerCacheControlBuilder()
-        .maxAgeSeconds(86400)
-        .cachePublic()
-        .build();
+ServerCacheControl cc = ServerCacheControl.builder()
+                                          .maxAgeSeconds(86400)
+                                          .cachePublic()
+                                          .build();
 fsb.cacheControl(cc /* "max-age=86400, public" */);
 // Specify a custom header.
 
