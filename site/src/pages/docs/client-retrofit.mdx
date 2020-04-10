@@ -3,7 +3,7 @@
 [Retrofit](https://square.github.io/retrofit/) is a library that simplifies the access to RESTful services
 by turning an HTTP API into a Java interface.
 
-Armeria provides a builder class called :api:`ArmeriaRetrofit` that builds an alternative
+Armeria provides a builder class called <type://ArmeriaRetrofit> that builds an alternative
 `Retrofit` implementation that replaces the networking engine of from [OkHttp](https://square.github.io/okhttp/)
 to Armeria. By doing so, you get the following benefits:
 - Better performance, thanks to [Netty](https://netty.io/) and its JNI-based I/O and TLS implementation
@@ -11,24 +11,26 @@ to Armeria. By doing so, you get the following benefits:
 - Cleartext HTTP/2 support, as known as `h2c`
 
 ```java
-    import retrofit2.Retrofit;
-    import retrofit2.converter.jackson.JacksonConverterFactory;
-    import retrofit2.http.GET;
-    import retrofit2.http.Path;
+import com.linecorp.armeria.client.retrofit2.ArmeriaRetrofit;
 
-    class UserInfo { ... }
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-    interface MyService {
-        @GET("/userInfo/{id}")
-        CompletableFuture<UserInfo> getUserInfo(@Path("id") String id);
-    }
+class UserInfo { ... }
 
-    Retrofit retrofit = ArmeriaRetrofit.builder("http://localhost:8080/")
-                                       .addConverterFactory(JacksonConverterFactory.create())
-                                       .build();
+interface MyService {
+    @GET("/userInfo/{id}")
+    CompletableFuture<UserInfo> getUserInfo(@Path("id") String id);
+}
 
-    MyService service = retrofit.create(MyService.class);
-    UserInfo userInfo = service.getUserInfo("foo").get();
+Retrofit retrofit = ArmeriaRetrofit.builder("http://localhost:8080/")
+                                   .addConverterFactory(JacksonConverterFactory.create())
+                                   .build();
+
+MyService service = retrofit.create(MyService.class);
+UserInfo userInfo = service.getUserInfo("foo").get();
 ```
 
 For more information, please refer to the API documentation of the

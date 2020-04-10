@@ -19,20 +19,20 @@ public final class MyAttributeKeys {
 Then, you can access them via `RequestContext.attr(AttributeKey)`:
 
 ```java
-    // Setting
-    ctx.setAttr(INT_ATTR, 42);
-    MyBean myBean = new MyBean();
-    ctx.setAttr(BEAN_ATTR, new MyBean());
+// Setting
+ctx.setAttr(INT_ATTR, 42);
+MyBean myBean = new MyBean();
+ctx.setAttr(BEAN_ATTR, new MyBean());
 
-    // Getting
-    Integer i = ctx.attr(INT_ATTR); // i == 42
-    MyBean bean = ctx.attr(BEAN_ATTR); // bean == myBean
-    ```
+// Getting
+Integer i = ctx.attr(INT_ATTR); // i == 42
+MyBean bean = ctx.attr(BEAN_ATTR); // bean == myBean
+```
 
-    You can also iterate over all the attributes in a context using `RequestContext.attrs()`:
+You can also iterate over all the attributes in a context using `RequestContext.attrs()`:
 
-    ```java
-    ctx.attrs().forEachRemaining(e -> {
-        System.err.println(e.getKey() + ": " + e.getValue());
-    });
+```java
+ctx.attrs().forEachRemaining(e -> {
+    System.err.println(e.getKey() + ": " + e.getValue());
+});
 ```

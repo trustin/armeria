@@ -123,62 +123,65 @@ Pre-defined log formats are as follows.
 
 Tokens for the log format are listed in the following table.
 
-+-------------------------------------+-------------------+----------------------------------------------------+
-| Tokens                              | Condition support | Description                                        |
-+=====================================+===================+====================================================+
-| `%A`                                | No                | the local IP address                               |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%a`                                | No                | the IP address of the client who initiated a       |
-|                                     |                   | request. Use `%{c}a` format string to get the      |
-|                                     |                   | remote IP address where the channel is connected   |
-|                                     |                   | to, which may yield a different value when there   |
-|                                     |                   | is an intermediary proxy server.                   |
-|                                     |                   | This value relies on the `clientAddress()` and     |
-|                                     |                   | `remoteAddress()` methods of                       |
-|                                     |                   | <type://ServiceRequestContext>, please refer to    |
-|                                     |                   | :ref:`client_address` about how to configure the   |
-|                                     |                   | <type://ServerBuilder> to get the client address   |
-|                                     |                   | you interest.                                      |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%h`                                | No                | the remote hostname or IP address if DNS           |
-|                                     |                   | hostname lookup is not available                   |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%I`                                | No                | the request ID. Use `%{short}I` format string to   |
-|                                     |                   | get the short form.                                |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%l`                                | No                | the remote logname of the user                     |
-|                                     |                   | (not supported yet, always write `-`)              |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%u`                                | No                | the name of the authenticated remote user          |
-|                                     |                   | (not supported yet, always write `-`)              |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%t`                                | No                | the date, time and time zone that the request      |
-|                                     |                   | was received, by default in `strftime` format      |
-|                                     |                   | %d/%b/%Y:%H:%M:%S %z.                              |
-|                                     |                   | (for example, `10/Oct/2000:13:55:36 -0700`)        |
-|                                     |                   | Refer to :ref:`timestamp-format` for more          |
-|                                     |                   | information.                                       |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%r`                                | Yes               | the request line from the client                   |
-|                                     |                   | (for example, `GET /path h2`)                      |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%s`                                | No                | the HTTP status code returned to the client        |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%b`                                | Yes               | the size of the object returned to the client,     |
-|                                     |                   | measured in bytes                                  |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%{HEADER_NAME}i`                   | Yes               | the value of the specified HTTP request header     |
-|                                     |                   | name                                               |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%{HEADER_NAME}o`                   | Yes               | the value of the specified HTTP response header    |
-|                                     |                   | name                                               |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%{ATTRIBUTE_NAME}j`                | Yes               | the value of the specified attribute name          |
-+-------------------------------------+-------------------+----------------------------------------------------+
-| `%{REQUEST_LOG_NAME}L`              | Yes               | the value of the specified variable of the         |
-|                                     |                   | <type://RequestLog>. Refer to :ref:`request-log`   |
-|                                     |                   | for more information.                              |
-+-------------------------------------+-------------------+----------------------------------------------------+
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+|<div style="width:12rem">Tokens</div>| Condition support | Description                                                             |
++=====================================+===================+=========================================================================+
+| `%A`                                | No                | the local IP address                                                    |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%a`                                | No                | the IP address of the client who initiated a                            |
+|                                     |                   | request. Use `%{c}a` format string to get the                           |
+|                                     |                   | remote IP address where the channel is connected                        |
+|                                     |                   | to, which may yield a different value when there                        |
+|                                     |                   | is an intermediary proxy server.                                        |
+|                                     |                   | This value relies on the `clientAddress()` and                          |
+|                                     |                   | `remoteAddress()` methods of                                            |
+|                                     |                   | <type://ServiceRequestContext>, please refer to                         |
+|                                     |                   | [Getting an IP address of a client who initiated arequest]              |
+|                                     |                   |  about how to configure the                                             |
+|                                     |                   | <type://ServerBuilder> to get the client address                        |
+|                                     |                   | you interest.                                                           |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%h`                                | No                | the remote hostname or IP address if DNS                                |
+|                                     |                   | hostname lookup is not available                                        |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%I`                                | No                | the request ID. Use `%{short}I` format string to                        |
+|                                     |                   | get the short form.                                                     |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%l`                                | No                | the remote logname of the user                                          |
+|                                     |                   | (not supported yet, always write `-`)                                   |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%u`                                | No                | the name of the authenticated remote user                               |
+|                                     |                   | (not supported yet, always write `-`)                                   |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%t`                                | No                | the date, time and time zone that the request                           |
+|                                     |                   | was received, by default in `strftime` format                           |
+|                                     |                   | %d/%b/%Y:%H:%M:%S %z.                                                   |
+|                                     |                   | (for example, `10/Oct/2000:13:55:36 -0700`)                             |
+|                                     |                   | Refer to                                                                |
+|                                     |                   | [Customizing timestamp format][#customizing-timestamp-format]           |
+|                                     |                   | for more information.                                                   |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%r`                                | Yes               | the request line from the client                                        |
+|                                     |                   | (for example, `GET /path h2`)                                           |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%s`                                | No                | the HTTP status code returned to the client                             |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%b`                                | Yes               | the size of the object returned to the client,                          |
+|                                     |                   | measured in bytes                                                       |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%{HEADER_NAME}i`                   | Yes               | the value of the specified HTTP request header                          |
+|                                     |                   | name                                                                    |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%{HEADER_NAME}o`                   | Yes               | the value of the specified HTTP response header                         |
+|                                     |                   | name                                                                    |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%{ATTRIBUTE_NAME}j`                | Yes               | the value of the specified attribute name                               |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
+| `%{REQUEST_LOG_NAME}L`              | Yes               | the value of the specified variable of the                              |
+|                                     |                   | <type://RequestLog>. Refer to                                           |
+|                                     |                   | [Retrieving values from RequestLog](#retrieving-values-from-requestlog) |
+|                                     |                   | for more information.                                                   |
++-------------------------------------+-------------------+-------------------------------------------------------------------------+
 
 Some tokens can have a condition of the response status code and the log message can be omitted with
 the condition.
@@ -205,7 +208,7 @@ supported variable:
 
 +-----------------------------------+--------------------------------------------------------------------+
 |<div style="width:13rem">Name</div>| Description                                                        |
-+===================================+===============================================================+
++===================================+====================================================================+
 | `method`                          | the HTTP method value of the request                               |
 +-----------------------------------+--------------------------------------------------------------------+
 | `path`                            | the absolute path part of the HTTP request URI                     |
@@ -316,7 +319,7 @@ You can specify your own log writer which implements a `Consumer` of <type://Req
 ServerBuilder sb = Server.builder();
 sb.accessLogWriter(requestLog -> {
     // Write your access log with the given RequestLog instance.
-    ....
+    ...
 }, true);
 ```
 
@@ -334,12 +337,12 @@ ServerBuilder sb = Server.builder();
 
 // Using the specific logger name.
 sb.accessLogger("com.example.my.access.logs");
-....
+...
 
 // Using your own logger.
 Logger logger = LoggerFactory.getLogger("com.example2.my.access.logs");
 sb.accessLogger(Logger);
-....
+...
 
 // Using the mapper which sets an access logger with the given VirtualHost instance.
 sb.accessLogger(virtualHost -> {
@@ -347,7 +350,7 @@ sb.accessLogger(virtualHost -> {
     // Do not return null. Otherwise, it will raise an IllegalStateException.
     return LoggerFactory.getLogger("com.example.my.access.logs." + virtualHost.defaultHostname());
 });
-....
+...
 ```
 
 You can also specify your own logger for the specific <type://VirtualHost>. In this case, the mapper or logger
@@ -359,14 +362,14 @@ you set for a specific <type://VirtualHost> will override the access logger set 
 sb.virtualHost("*.example.com")
   .accessLogger("com.example.my.access.logs")
   .and()
-....
+...
 
 // Using your own logger.
 Logger logger = LoggerFactory.getLogger("com.example2.my.access.logs");
 sb.virtualHost("*.example2.com")
   .accessLogger(Logger)
   .and()
-....
+...
 
 // Using the mapper which sets an access logger with the given VirtualHost instance.
 sb.virtualHost("*.example3.com")
@@ -375,7 +378,7 @@ sb.virtualHost("*.example3.com")
     // Do not return null. Otherwise, it will raise an IllegalStateException.
     return LoggerFactory.getLogger("com.example.my.access.logs." + virtualHost.defaultHostname());
   })
-....
+...
 ```
 
 [Getting an IP address of a client who initiated a request]: /docs/server-basics#getting-an-ip-address-of-a-client-who-initiated-a-request

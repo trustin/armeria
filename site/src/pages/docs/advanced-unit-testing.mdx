@@ -9,92 +9,92 @@ A unit test of a client or a service will require you to prepare two objects:
 object easily:
 
 ```java
-    import org.junit.Before;
-    import org.junit.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-    import com.linecorp.armeria.common.HttpRequest;
-    import com.linecorp.armeria.common.HttpResponse;
-    import com.linecorp.armeria.common.AggregatedHttpResponse;
-    import com.linecorp.armeria.client.ClientRequestContext;
-    import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.AggregatedHttpResponse;
+import com.linecorp.armeria.client.ClientRequestContext;
+import com.linecorp.armeria.server.ServiceRequestContext;
 
-    public class MyJUnit4Test {
+public class MyJUnit4Test {
 
-        private MyClient client;
-        private MyService service;
+    private MyClient client;
+    private MyService service;
 
-        @Before
-        public void setUp() {
-            client = ...;
-            service = ...;
-        }
-
-        @Test
-        public void testClient() throws Exception {
-            // Given
-            HttpRequest req = HttpRequest.of(HttpMethod.GET, "/greet?name=foo");
-            ClientRequestContext cctx = ClientRequestContext.of(req);
-
-            // When
-            HttpResponse res = client.execute(cctx, req);
-
-            // Then
-            AggregatedHttpResponse aggregatedRes = res.aggregate().get();
-            assertEquals(200, aggregatedRes.status().code());
-        }
-
-        @Test
-        public void testService() throws Exception {
-            // Given
-            HttpRequest req = HttpRequest.of(HttpMethod.POST, "/greet",
-                                             MediaType.JSON_UTF_8,
-                                             "{ \"name\": \"foo\" }");
-            ServiceRequestContext sctx = ServiceRequestContext.of(req);
-
-            // When
-            HttpResponse res = service.serve(sctx, req);
-
-            // Then
-            AggregatedHttpResponse aggregatedRes = res.aggregate().get();
-            assertEquals(200, aggregatedRes.status().code());
-        }
+    @Before
+    public void setUp() {
+        client = ...;
+        service = ...;
     }
+
+    @Test
+    public void testClient() throws Exception {
+        // Given
+        HttpRequest req = HttpRequest.of(HttpMethod.GET, "/greet?name=foo");
+        ClientRequestContext cctx = ClientRequestContext.of(req);
+
+        // When
+        HttpResponse res = client.execute(cctx, req);
+
+        // Then
+        AggregatedHttpResponse aggregatedRes = res.aggregate().get();
+        assertEquals(200, aggregatedRes.status().code());
+    }
+
+    @Test
+    public void testService() throws Exception {
+        // Given
+        HttpRequest req = HttpRequest.of(HttpMethod.POST, "/greet",
+                                         MediaType.JSON_UTF_8,
+                                         "{ \"name\": \"foo\" }");
+        ServiceRequestContext sctx = ServiceRequestContext.of(req);
+
+        // When
+        HttpResponse res = service.serve(sctx, req);
+
+        // Then
+        AggregatedHttpResponse aggregatedRes = res.aggregate().get();
+        assertEquals(200, aggregatedRes.status().code());
+    }
+}
 ```
 
 Although the fake context returned by `ClientRequestContext.of()` and `ServiceRequestContext.of()` will
 provide sensible defaults, you can override its default properties using a builder:
 
 ```java
-    import java.net.InetAddress;
-    import java.net.InetSocketAddress;
-    import java.util.Map;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Map;
 
-    import com.linecorp.armeria.common.SessionProtocol;
-    import com.linecorp.armeria.client.ClientRequestContext;
-    import com.linecorp.armeria.server.RoutingResult;
-    import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.common.SessionProtocol;
+import com.linecorp.armeria.client.ClientRequestContext;
+import com.linecorp.armeria.server.RoutingResult;
+import com.linecorp.armeria.server.ServiceRequestContext;
 
-    HttpRequest req = HttpRequest.of(...);
+HttpRequest req = HttpRequest.of(...);
 
-    ClientRequestContext cctx =
-            ClientRequestContext.builder(req)
-                                .sessionProtocol(SessionProtocol.H1C)
-                                .remoteAddress(new InetSocketAddress("192.168.0.2", 443))
-                                .build();
+ClientRequestContext cctx =
+        ClientRequestContext.builder(req)
+                            .sessionProtocol(SessionProtocol.H1C)
+                            .remoteAddress(new InetSocketAddress("192.168.0.2", 443))
+                            .build();
 
-    RoutingResult routingResult =
-            RoutingResult.builder()
-                         .path("/mapped/path")                       // Mapped path
-                         .query("foo=bar&baz=qux")                   // Query string
-                         .pathParams(Map.of("pathParam1", "value1",  // Path parameters
-                                            "pathParam2", "value2"))
-                         .build();
+RoutingResult routingResult =
+        RoutingResult.builder()
+                     .path("/mapped/path")                       // Mapped path
+                     .query("foo=bar&baz=qux")                   // Query string
+                     .pathParams(Map.of("pathParam1", "value1",  // Path parameters
+                                        "pathParam2", "value2"))
+                     .build();
 
-    ServiceRequestContext sctx =
-            ServiceRequestContext.builder(req)
-                                 .clientAddress(InetAddress.getByName("192.168.1.2"))
-                                 .routingResult(routingResult);
-                                 .build();
+ServiceRequestContext sctx =
+        ServiceRequestContext.builder(req)
+                             .clientAddress(InetAddress.getByName("192.168.1.2"))
+                             .routingResult(routingResult);
+                             .build();
 ```
 
 ## Using a fake context to emulate an incoming request
@@ -110,28 +110,28 @@ such as:
 The following example shows how to emit a fake request every minute:
 
 ```java
-    import java.util.concurrent.ScheduledExecutorService;
-    import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-    import com.linecorp.armeria.server.HttpService;
+import com.linecorp.armeria.server.HttpService;
 
-    ScheduledExecutorService executor = ...;
-    HttpService sessionManagementService = (ctx, req) -> ...;
+ScheduledExecutorService executor = ...;
+HttpService sessionManagementService = (ctx, req) -> ...;
 
-    // Send a session expiration request to the session management service
-    // every minute.
-    executor.scheduleWithFixedDelay(() -> {
-        HttpRequest req = HttpRequest.of(HttpMethod.POST, "/expire_stall_sessions");
-        ServiceRequestContext ctx = ServiceRequestContext.of(req);
-        try {
-            HttpResponse res = sessionManagementService.servce(ctx, req);
-            AggregatedHttpResponse aggregatedRes = res.aggregate().get();
-            if (aggregatedRes.status().code() != 200) {
-                System.err.println("Failed to expire stall sessions: " +
-                                   aggregatedRes);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+// Send a session expiration request to the session management service
+// every minute.
+executor.scheduleWithFixedDelay(() -> {
+    HttpRequest req = HttpRequest.of(HttpMethod.POST, "/expire_stall_sessions");
+    ServiceRequestContext ctx = ServiceRequestContext.of(req);
+    try {
+        HttpResponse res = sessionManagementService.servce(ctx, req);
+        AggregatedHttpResponse aggregatedRes = res.aggregate().get();
+        if (aggregatedRes.status().code() != 200) {
+            System.err.println("Failed to expire stall sessions: " +
+                               aggregatedRes);
         }
-    }, 1, 1, TimeUnit.MINUTES);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}, 1, 1, TimeUnit.MINUTES);
 ```

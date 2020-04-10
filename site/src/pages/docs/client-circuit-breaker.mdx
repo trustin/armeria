@@ -23,26 +23,26 @@ A <type://CircuitBreaker> can be one of the following three states:
   - After a certain amount of time in the `OPEN` state, the state machine enters the `HALF_OPEN` state
     which sends a request to find out if the service is still unavailable or not.
     If the request succeeds, it enters the `CLOSED` state. If it fails, it enters the `OPEN` state again.
+    
 ```bob-svg
-                                       +----------------+
-                                       |                |
-                                       |      OPEN      |
-                                       |                |<-------------------+
-                                       +------------+---+     failed again   |
-                                           ^        |                        |
-                                           |        |                        |
-                                           |        |                        |
-                                           |        |                        |
-     under threshold                       |        |                        |
-         +---+                             |        |                        |
-         |   |                             |        |                        |
-         |   v                             |        |                        |
-    +----+-----------+  exceeded threshold |        |     timed out       +--+-------------+
-    |                +---------------------+        +-------------------->|                |
-    |     CLOSED     |                                                    |   HALF_ OPEN   |
-    |                |<---------------------------------------------------+                |
-    +----------------+          back to normal (request succeeded)        +----------------+
-
+                                   +----------------+
+                                   |                |
+                                   |      OPEN      |
+                                   |                |<-------------------+
+                                   +------------+---+     failed again   |
+                                       ^        |                        |
+                                       |        |                        |
+                                       |        |                        |
+                                       |        |                        |
+ under threshold                       |        |                        |
+     +---+                             |        |                        |
+     |   |                             |        |                        |
+     |   v                             |        |                        |
++----+-----------+  exceeded threshold |        |     timed out       +--+-------------+
+|                +---------------------+        +-------------------->|                |
+|     CLOSED     |                                                    |   HALF_ OPEN   |
+|                |<---------------------------------------------------+                |
++----------------+          back to normal (request succeeded)        +----------------+
 ```
 
 ## `CircuitBreakerClient`
@@ -56,22 +56,22 @@ Let's use <type://CircuitBreakerClient> to find out what we can do.
 You can use the `decorator()` method in <type://ClientBuilder> to build a <type://CircuitBreakerClient>:
 
 ```java
-    import com.linecorp.armeria.client.WebClient;
-    import com.linecorp.armeria.client.circuitbreaker.CircuitBreaker;
-    import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerClient;
-    import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerStrategy;
-    import com.linecorp.armeria.common.AggregatedHttpResponse;
-    import com.linecorp.armeria.common.HttpRequest;
-    import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.client.WebClient;
+import com.linecorp.armeria.client.circuitbreaker.CircuitBreaker;
+import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerClient;
+import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerStrategy;
+import com.linecorp.armeria.common.AggregatedHttpResponse;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
 
-    CircuitBreakerStrategy strategy = CircuitBreakerStrategy.onServerErrorStatus();
-    WebClient client = WebClient
-            .builder(...)
-            .decorator(CircuitBreakerClient.builder(strategy)
-                                           .newDecorator())
-            .build();
+CircuitBreakerStrategy strategy = CircuitBreakerStrategy.onServerErrorStatus();
+WebClient client = WebClient
+        .builder(...)
+        .decorator(CircuitBreakerClient.builder(strategy)
+                                       .newDecorator())
+        .build();
 
-    AggregatedHttpResponse res = client.execute(...).aggregate().join(); // Send requests on and on.
+AggregatedHttpResponse res = client.execute(...).aggregate().join(); // Send requests on and on.
 ```
 
 Now, the <type://WebClient> can track the number of success or failure events depending on the
@@ -89,42 +89,42 @@ The following example shows a <type://CircuitBreakerStrategy> implementation tha
 is raised or the status is `5xx`, succeeds when the status is `2xx` and ignores others.
 
 ```java
-    import com.linecorp.armeria.client.ClientRequestContext;
-    import com.linecorp.armeria.client.UnprocessedRequestException;
-    import com.linecorp.armeria.common.HttpStatus;
-    import com.linecorp.armeria.common.HttpStatusClass;
+import com.linecorp.armeria.client.ClientRequestContext;
+import com.linecorp.armeria.client.UnprocessedRequestException;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.HttpStatusClass;
 
-    final CircuitBreakerStrategy myStrategy = new CircuitBreakerStrategy() {
+final CircuitBreakerStrategy myStrategy = new CircuitBreakerStrategy() {
 
-        @Override
-        public CompletionStage<Boolean> shouldReportAsSuccess(ClientRequestContext ctx,
-                                                              @Nullable Throwable cause) {
-            if (cause != null) {
-                if (cause instanceof UnprocessedRequestException) {
-                    // Neither a success nor a failure because the request has not been handled by the server.
-                    return CompletableFuture.completedFuture(null);
-                }
-                // A failure if an Exception is raised.
+    @Override
+    public CompletionStage<Boolean> shouldReportAsSuccess(ClientRequestContext ctx,
+                                                          @Nullable Throwable cause) {
+        if (cause != null) {
+            if (cause instanceof UnprocessedRequestException) {
+                // Neither a success nor a failure because the request has not been handled by the server.
+                return CompletableFuture.completedFuture(null);
+            }
+            // A failure if an Exception is raised.
+            return CompletableFuture.completedFuture(false);
+        }
+
+        final HttpStatus status = ctx.log().responseHeaders().status();
+        if (status != null) {
+            // A failure if the response is 5xx.
+            if (status.codeClass() == HttpStatusClass.SERVER_ERROR) {
                 return CompletableFuture.completedFuture(false);
             }
 
-            final HttpStatus status = ctx.log().responseHeaders().status();
-            if (status != null) {
-                // A failure if the response is 5xx.
-                if (status.codeClass() == HttpStatusClass.SERVER_ERROR) {
-                    return CompletableFuture.completedFuture(false);
-                }
-
-                // A success if the response is 2xx.
-                if (status.codeClass() == HttpStatusClass.SUCCESS) {
-                    return CompletableFuture.completedFuture(true);
-                }
+            // A success if the response is 2xx.
+            if (status.codeClass() == HttpStatusClass.SUCCESS) {
+                return CompletableFuture.completedFuture(true);
             }
-
-            // Neither a success nor a failure. Do not take this response into account.
-            return CompletableFuture.completedFuture(null);
         }
-    };
+
+        // Neither a success nor a failure. Do not take this response into account.
+        return CompletableFuture.completedFuture(null);
+    }
+};
 ```
 
 If you want to treat a <type://Response> as a success, return `true`. Return `false` to treat as a failure.
@@ -136,45 +136,45 @@ you should implement <type://CircuitBreakerStrategyWithContent> and specify it w
 <type://WebClient> using <type://CircuitBreakerClientBuilder>:
 
 ```java
-    import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerStrategyWithContent;
+import com.linecorp.armeria.client.circuitbreaker.CircuitBreakerStrategyWithContent;
 
-    final CircuitBreakerStrategyWithContent<HttpResponse> myStrategy =
-            new CircuitBreakerStrategyWithContent<HttpResponse>() {
+final CircuitBreakerStrategyWithContent<HttpResponse> myStrategy =
+        new CircuitBreakerStrategyWithContent<HttpResponse>() {
 
-                @Override
-                public CompletionStage<Boolean> shouldReportAsSuccess(ClientRequestContext ctx,
-                                                                      HttpResponse response) {
-                    return response.aggregate().handle((res, cause) -> {
-                        if (cause != null) {
-                            if (cause instanceof UnprocessedRequestException) {
-                                // Neither a success nor a failure because the request has not been handled
-                                // by the server.
-                                return null;
-                            }
-                            // A failure if an Exception is raised.
-                            return false;
+            @Override
+            public CompletionStage<Boolean> shouldReportAsSuccess(ClientRequestContext ctx,
+                                                                  HttpResponse response) {
+                return response.aggregate().handle((res, cause) -> {
+                    if (cause != null) {
+                        if (cause instanceof UnprocessedRequestException) {
+                            // Neither a success nor a failure because the request has not been handled
+                            // by the server.
+                            return null;
                         }
+                        // A failure if an Exception is raised.
+                        return false;
+                    }
 
-                        final String content = res.contentUtf8();
-                        if ("Success".equals(content)) {
-                            return true;
-                        } else if ("Failure".equals(content)) {
-                            return false;
-                        }
+                    final String content = res.contentUtf8();
+                    if ("Success".equals(content)) {
+                        return true;
+                    } else if ("Failure".equals(content)) {
+                        return false;
+                    }
 
-                        // Neither a success nor a failure. Do not take this response into account.
-                        return null;
-                    });
-                }
-            };
+                    // Neither a success nor a failure. Do not take this response into account.
+                    return null;
+                });
+            }
+        };
 
-    WebClient client = WebClient
-            .builder(...)
-            .decorator(CircuitBreakerClient.builder(myStrategy) // Specify the strategy
-                                           .newDecorator())
-            .build();
+WebClient client = WebClient
+        .builder(...)
+        .decorator(CircuitBreakerClient.builder(myStrategy) // Specify the strategy
+                                       .newDecorator())
+        .build();
 
-    AggregatedHttpResponse res = client.execute(...).aggregate().join();
+AggregatedHttpResponse res = client.execute(...).aggregate().join();
 ```
 
 ## Grouping `CircuitBreaker`s
@@ -209,39 +209,39 @@ Therefore, Armeria provides various ways that let users group the range of circu
 - Group by method: a single <type://CircuitBreaker> is used for each method.
 
   ```java
-      // Create CircuitBreakers per method
-      CircuitBreakerClient.newPerMethodDecorator(factory, httpStrategy);
-      // The names of the created CircuitBreaker: my-cb-GET, my-cb-POST, ...
+  // Create CircuitBreakers per method
+  CircuitBreakerClient.newPerMethodDecorator(factory, httpStrategy);
+  // The names of the created CircuitBreaker: my-cb-GET, my-cb-POST, ...
 
-      CircuitBreakerRpcClient.newPerMethodDecorator(factory, rpcStrategy);
-      // The names of the created CircuitBreaker: my-cb-methodA, my-cb-methodB, ...
+  CircuitBreakerRpcClient.newPerMethodDecorator(factory, rpcStrategy);
+  // The names of the created CircuitBreaker: my-cb-methodA, my-cb-methodB, ...
   ```
 
 - Group by host and method: a single <type://CircuitBreaker> is used for each method and host combination.
 
   ```java
-      // Create CircuitBreakers per host and method
-      CircuitBreakerClient.newPerHostAndMethodDecorator(factory, httpStrategy);
-      // The names of the created CircuitBreaker: my-cb-a.com#GET,
-      // my-cb-a.com#POST, my-cb-b.com#GET, my-cb-b.com#POST, ...
+  // Create CircuitBreakers per host and method
+  CircuitBreakerClient.newPerHostAndMethodDecorator(factory, httpStrategy);
+  // The names of the created CircuitBreaker: my-cb-a.com#GET,
+  // my-cb-a.com#POST, my-cb-b.com#GET, my-cb-b.com#POST, ...
 
-      CircuitBreakerRpcClient.newPerHostAndMethodDecorator(factory, rpcStrategy);
-      // The names of the created CircuitBreaker: my-cb-a.com#methodA,
-      // my-cb-a.com#methodB, my-cb-b.com#methodA, my-cb-b.com#methodB, ...
+  CircuitBreakerRpcClient.newPerHostAndMethodDecorator(factory, rpcStrategy);
+  // The names of the created CircuitBreaker: my-cb-a.com#methodA,
+  // my-cb-a.com#methodB, my-cb-b.com#methodA, my-cb-b.com#methodB, ...
   ```
 
 If you want none of the above groupings, you can group them however you want using
 <type://KeyedCircuitBreakerMapping> and <type://KeyedCircuitBreakerMapping$KeySelector>.
 
 ```java
-    import com.linecorp.armeria.client.circuitbreaker.KeyedCircuitBreakerMapping;
-    import com.linecorp.armeria.client.circuitbreaker.KeyedCircuitBreakerMapping.KeySelector;
+import com.linecorp.armeria.client.circuitbreaker.KeyedCircuitBreakerMapping;
+import com.linecorp.armeria.client.circuitbreaker.KeyedCircuitBreakerMapping.KeySelector;
 
-    // I want to create CircuitBreakers per path!
-    final KeyedCircuitBreakerMapping<String> mapping =
-            new KeyedCircuitBreakerMapping<>((ctx, req) -> ctx.path(), factory);
+// I want to create CircuitBreakers per path!
+final KeyedCircuitBreakerMapping<String> mapping =
+        new KeyedCircuitBreakerMapping<>((ctx, req) -> ctx.path(), factory);
 
-    CircuitBreakerClient.newDecorator(mapping, httpStrategy);
+CircuitBreakerClient.newDecorator(mapping, httpStrategy);
 ```
 
 ## `CircuitBreakerBuilder`
@@ -274,14 +274,14 @@ If you use <type://CircuitBreakerBuilder>, you can configure the parameters whic
     <type://MetricCollectingCircuitBreakerListener> to export metrics:
 
   ```java
-      import com.linecorp.armeria.client.circuitbreaker.MetricCollectingCircuitBreakerListener
+  import com.linecorp.armeria.client.circuitbreaker.MetricCollectingCircuitBreakerListener
 
-      import io.micrometer.core.instrument.Metrics;
+  import io.micrometer.core.instrument.Metrics;
 
-      final MetricCollectingCircuitBreakerListener listener =
-              new MetricCollectingCircuitBreakerListener(Metrics.globalRegistry);
-      final CircuitBreakerBuilder builder = CircuitBreaker.builder()
-                                                          .listener(listener);
+  final MetricCollectingCircuitBreakerListener listener =
+          new MetricCollectingCircuitBreakerListener(Metrics.globalRegistry);
+  final CircuitBreakerBuilder builder = CircuitBreaker.builder()
+                                                      .listener(listener);
   ```
 
 ## Using `CircuitBreaker` with non-Armeria client
@@ -297,23 +297,23 @@ clients:
 For example:
 
 ```java
-    private final CircuitBreaker cb = CircuitBreaker.of("some-client");
-    private final SomeClient client = ...;
+private final CircuitBreaker cb = CircuitBreaker.of("some-client");
+private final SomeClient client = ...;
 
-    public void sendRequestWithCircuitBreaker() {
-        if (!cb.canRequest()) {
-            throw new RuntimeException();
-        }
+public void sendRequestWithCircuitBreaker() {
+    if (!cb.canRequest()) {
+        throw new RuntimeException();
+    }
 
-        boolean success = false;
-        try {
-            success = client.sendRequest();
-        } finally {
-            if (success) {
-                cb.onSuccess();
-            } else {
-                cb.onFailure();
-            }
+    boolean success = false;
+    try {
+        success = client.sendRequest();
+    } finally {
+        if (success) {
+            cb.onSuccess();
+        } else {
+            cb.onFailure();
         }
     }
+}
 ```

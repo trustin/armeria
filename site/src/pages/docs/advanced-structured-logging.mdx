@@ -121,28 +121,26 @@ occur. Also note that, there's no `socketConnect` because the client just waits 
 uses it.)
 
 ```bob-svg
-
-   +-----------------------------+                                                                 #2
-   :<---connectionAcquisition--->|
-   +-----------------------------+
-   :<-----pendingAcquisition---->|
-   +-----------------------------+
++-----------------------------+                                                                 #2
+:<---connectionAcquisition--->|
++-----------------------------+
+:<-----pendingAcquisition---->|
++-----------------------------+
 ```
 
 3. Connecting to the remote peer with the resolved IP address after the existing connection attempt is
 failed.
 
 ```bob-svg
-
-   +------------------------------------------------------------------------------------------+    #3
-   :<-----------------------------------connectionAcquisition-------------------------------->|
-   +------------------------------------------------------------------------------------------+
-   :<--------dnsResolution-------->|
-   +-------------------------------+--------------------------+
-                                   :<---pendingAcquisition--->|
-                                   +--------------------------+-------------------------------+
-                                                              :<--------socketConnect-------->|
-                                                              +-------------------------------+
++------------------------------------------------------------------------------------------+    #3
+:<-----------------------------------connectionAcquisition-------------------------------->|
++------------------------------------------------------------------------------------------+
+:<--------dnsResolution-------->|
++-------------------------------+--------------------------+
+                               :<---pendingAcquisition--->|
+                               +--------------------------+-------------------------------+
+                                                          :<--------socketConnect-------->|
+                                                          +-------------------------------+
 ```
 
 ## Availability of properties
@@ -163,30 +161,30 @@ collected properties via the following methods:
   notified when a certain set of properties are available.
 
 ```java
-    import com.linecorp.armeria.common.HttpRequest;
-    import com.linecorp.armeria.common.HttpResponse;
-    import com.linecorp.armeria.common.logging.RequestLog;
-    import com.linecorp.armeria.common.logging.RequestLogProperty;
-    import com.linecorp.armeria.server.ServiceRequestContext;
-    import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.logging.RequestLog;
+import com.linecorp.armeria.common.logging.RequestLogProperty;
+import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.server.AbstractHttpService;
 
-    HttpService myService = (ctx, req) -> {
-        final RequestLogAccess logAccess = ctx.log();
+HttpService myService = (ctx, req) -> {
+    final RequestLogAccess logAccess = ctx.log();
 
-        logAccess.whenAvailable(RequestLogProperty.REQUEST_HEADERS)
-                 .thenAccept(log -> {
-                     assert log.isAvailable(RequestLogProperty.REQUEST_HEADERS);
-                     System.err.println("Started to handle a request: " +
-                                        log.requestHeaders());
-                 });
+    logAccess.whenAvailable(RequestLogProperty.REQUEST_HEADERS)
+             .thenAccept(log -> {
+                 assert log.isAvailable(RequestLogProperty.REQUEST_HEADERS);
+                 System.err.println("Started to handle a request: " +
+                                    log.requestHeaders());
+             });
 
-        logAccess.whenComplete()
-                 .thenAccept(log -> {
-                     assert log.isComplete();
-                     System.err.println("Handled a request: " + log);
-                 });
-        ...
-    }
+    logAccess.whenComplete()
+             .thenAccept(log -> {
+                 assert log.isComplete();
+                 System.err.println("Handled a request: " + log);
+             });
+    ...
+}
 ```
 
 ### Availability of client timing properties
@@ -195,24 +193,24 @@ On the client side, you can also get the timing information about the related co
 request and response properties, you need to use <type://ClientConnectionTimings> as follows:
 
 ```java
-    import com.linecorp.armeria.client.ClientConnectionTimings;
-    import com.linecorp.armeria.client.WebClient;
+import com.linecorp.armeria.client.ClientConnectionTimings;
+import com.linecorp.armeria.client.WebClient;
 
-    WebClient client = WebClient
-        .builder("http://armeria.com")
-        .decorator((delegate, ctx, req) -> {
-            // Can get as soon as a request is started.
-            ctx.log().whenAvailable(RequestLogProperty.REQUEST_START_TIME)
-               .thenAccept(log -> {
-                   final ClientConnectionTimings timings = ClientConnectionTimings.get(log);
-                   if (timings != null) {
-                       System.err.println("Connection acquisition duration: " +
-                                          timings.connectionAcquisitionDurationNanos());
-                   }
-               });
-            return delegate.execute(ctx, req);
-        })
-        .build();
+WebClient client = WebClient
+    .builder("http://armeria.com")
+    .decorator((delegate, ctx, req) -> {
+        // Can get as soon as a request is started.
+        ctx.log().whenAvailable(RequestLogProperty.REQUEST_START_TIME)
+           .thenAccept(log -> {
+               final ClientConnectionTimings timings = ClientConnectionTimings.get(log);
+               if (timings != null) {
+                   System.err.println("Connection acquisition duration: " +
+                                      timings.connectionAcquisitionDurationNanos());
+               }
+           });
+        return delegate.execute(ctx, req);
+    })
+    .build();
 ```
 
 <Tip>
@@ -231,24 +229,24 @@ by default. You can enable it using <type://ContentPreviewingClient> and <type:/
 decorators.
 
 ```java
-    import com.linecorp.armeria.server.logging.ContentPreviewingService;
-    import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.logging.ContentPreviewingService;
+import com.linecorp.armeria.server.ServerBuilder;
 
-    ServerBuilder sb = Server.builder();
-    ...
-    // Enable previewing the content with the maximum length of 100 for textual content.
-    sb.decorator(ContentPreviewingService.newDecorator(100));
-    ...
-    sb.build();
+ServerBuilder sb = Server.builder();
+...
+// Enable previewing the content with the maximum length of 100 for textual content.
+sb.decorator(ContentPreviewingService.newDecorator(100));
+...
+sb.build();
 ```
 
 ```java
-    import com.linecorp.armeria.client.logging.ContentPreviewingClient;
-    import com.linecorp.armeria.client.WebClientBuilder;
+import com.linecorp.armeria.client.logging.ContentPreviewingClient;
+import com.linecorp.armeria.client.WebClientBuilder;
 
-    WebClientBuilder cb = WebClient.builder();
-    ...
-    cb.decorator(ContentPreviewingClient.newDecorator(100));
+WebClientBuilder cb = WebClient.builder();
+...
+cb.decorator(ContentPreviewingClient.newDecorator(100));
 ```
 
 Note that the above decorators enable the previews only for textual content
@@ -263,41 +261,41 @@ The following example enables the textual preview of first 100 characters for th
 and the hex dump preview of first 100 characters for the content type of `application/binary`:
 
 ```java
-    import io.netty.buffer.ByteBufUtil;
-    import com.linecorp.armeria.common.MediaType;
-    import com.linecorp.armeria.common.logging.ContentPreviewer;
-    import com.linecorp.armeria.common.logging.ContentPreviewerFactoryBuilder;
+import io.netty.buffer.ByteBufUtil;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.common.logging.ContentPreviewer;
+import com.linecorp.armeria.common.logging.ContentPreviewerFactoryBuilder;
 
-    ServerBuilder sb = Server.builder();
+ServerBuilder sb = Server.builder();
 
-    ContentPreviewerFactoryBuilder builder = ContentPreviewerFactory.builder().maxLength(100);
-    builder.text(StandardCharsets.UTF_8 /* default charset */, (ctx, headers) -> {
-        final MediaType contentType = headers.contentType();
-        // Produces the textual preview when the content type is ANY_TEXT_TYPE.
-        if (contentType != null && contentType.is(MediaType.ANY_TEXT_TYPE)) {
-            return true;
-        }
-        return false;
-    });
+ContentPreviewerFactoryBuilder builder = ContentPreviewerFactory.builder().maxLength(100);
+builder.text(StandardCharsets.UTF_8 /* default charset */, (ctx, headers) -> {
+    final MediaType contentType = headers.contentType();
+    // Produces the textual preview when the content type is ANY_TEXT_TYPE.
+    if (contentType != null && contentType.is(MediaType.ANY_TEXT_TYPE)) {
+        return true;
+    }
+    return false;
+});
 
-    // Produces the hex dump when the content type is APPLICATION_BINARY.
-    builder.binary(MediaType.APPLICATION_BINARY);
+// Produces the hex dump when the content type is APPLICATION_BINARY.
+builder.binary(MediaType.APPLICATION_BINARY);
 
-    sb.decorator(ContentPreviewingService.newDecorator(builder.build()));
+sb.decorator(ContentPreviewingService.newDecorator(builder.build()));
 ```
 
 You can write your own producer to change the way to make the preview, e.g.
 
 ```java
-    ContentPreviewerFactoryBuilder builder = ContentPreviewerFactory.builder();
-    builder.binary(MediaTypeSet.of(MediaType.APPLICATION_BINARY),
-                   (headers, byteBuf) -> {
-                       // You can use the byteBuf to produce your own way.
-                   });
-    ...
-    ServerBuilder sb = Server.builder();
-    ...
-    sb.decorator(ContentPreviewingService.newDecorator(builder.build()));
+ContentPreviewerFactoryBuilder builder = ContentPreviewerFactory.builder();
+builder.binary(MediaTypeSet.of(MediaType.APPLICATION_BINARY),
+               (headers, byteBuf) -> {
+                   // You can use the byteBuf to produce your own way.
+               });
+...
+ServerBuilder sb = Server.builder();
+...
+sb.decorator(ContentPreviewingService.newDecorator(builder.build()));
 ```
 
 ## Nested log
@@ -307,9 +305,9 @@ a single <type://RequestLog>. A <type://RequestLog> can contain more than one ch
 to support this sort of use cases.
 
 ```java
-    import com.linecorp.armeria.common.logging.RequestLogBuilder;
+import com.linecorp.armeria.common.logging.RequestLogBuilder;
 
-    RequestLogBuilder.addChild(RequestLog);
+RequestLogBuilder.addChild(RequestLog);
 ```
 
 If the added <type://RequestLog> is the first child, the request-side log of the <type://RequestLog> will
@@ -317,59 +315,59 @@ be propagated to the parent log. You can add as many child logs as you want, but
 be affected. If you want to fill the response-side log of the parent log, please invoke:
 
 ```java
-    RequestLogBuilder.endResponseWithLastChild();
+RequestLogBuilder.endResponseWithLastChild();
 ```
 
 This will propagate the response-side log of the last added child to the parent log. The following diagram
 illustrates how a <type://RequestLog> with child logs looks like:
 
 ```bob-svg
-    /--------------------------------------------------------------\
-    |                                                              |
-    |  RequestLog                                                  |
-    |                                                              |
-    |                             /-----------------------------\  |
-    |                             :                             |  |
-    |  +----------------------+   |      Child RequestLogs      |  |
-    |  |                      |   |        e.g. retries         |  |
-    |  |                      |   |                             |  |
-    |  |   Request side log   |   |  +-----------------------+  |  |
-    |  |                      |   |  | Child #1              |  |  |
-    |  |                      |   |  | +-------------------+ |  |  |
-    |  |     Copied from      |<-------+ Request side log  | |  |  |
-    |  |     the first child  |   :  | +-------------------+ |  |  |
-    |  |                      |   |  | : Response side log | |  |  |
-    |  |                      |   |  | +-------------------+ |  |  |
-    |  +----------------------+   |  +-----------------------+  |  |
-    |                             |  | ...                   |  |  |
-    |  +----------------------+   |  +-----------------------+  |  |
-    |  |                      |   |              .              |  |
-    |  |                      |   |              .              |  |
-    |  |  Response side log   |   |  +-----------------------+  |  |
-    |  |                      |   |  | Child #N              |  |  |
-    |  |                      |   |  | +-------------------+ |  |  |
-    |  |     Copied from      |   |  | : Request side log  | |  |  |
-    |  |     the last child   |   |  | +-------------------+ |  |  |
-    |  |                      |<-------+ Response side log | |  |  |
-    |  |                      |   :  | +-------------------+ |  |  |
-    |  +----------------------+   |  +-----------------------+  |  |
-    |                             |                             |  |
-    |                             \-----------------------------/  |
-    |                                                              |
-    \--------------------------------------------------------------/
+/--------------------------------------------------------------\
+|                                                              |
+|  RequestLog                                                  |
+|                                                              |
+|                             /-----------------------------\  |
+|                             :                             |  |
+|  +----------------------+   |      Child RequestLogs      |  |
+|  |                      |   |        e.g. retries         |  |
+|  |                      |   |                             |  |
+|  |   Request side log   |   |  +-----------------------+  |  |
+|  |                      |   |  | Child #1              |  |  |
+|  |                      |   |  | +-------------------+ |  |  |
+|  |     Copied from      |<-------+ Request side log  | |  |  |
+|  |     the first child  |   :  | +-------------------+ |  |  |
+|  |                      |   |  | : Response side log | |  |  |
+|  |                      |   |  | +-------------------+ |  |  |
+|  +----------------------+   |  +-----------------------+  |  |
+|                             |  | ...                   |  |  |
+|  +----------------------+   |  +-----------------------+  |  |
+|  |                      |   |              .              |  |
+|  |                      |   |              .              |  |
+|  |  Response side log   |   |  +-----------------------+  |  |
+|  |                      |   |  | Child #N              |  |  |
+|  |                      |   |  | +-------------------+ |  |  |
+|  |     Copied from      |   |  | : Request side log  | |  |  |
+|  |     the last child   |   |  | +-------------------+ |  |  |
+|  |                      |<-------+ Response side log | |  |  |
+|  |                      |   :  | +-------------------+ |  |  |
+|  +----------------------+   |  +-----------------------+  |  |
+|                             |                             |  |
+|                             \-----------------------------/  |
+|                                                              |
+\--------------------------------------------------------------/
 ```
 
 You can retrieve the child logs using `RequestLog.children()`.
 
 ```java
-    final RequestContext ctx = ...;
-    ctx.log().whenComplete().thenAccept(log -> {
-        if (!log.children().isEmpty()) {
-            System.err.println("A request finished after " + log.children().size() + " attempt(s): " + log);
-        } else {
-            System.err.println("A request is done: " + log);
-        }
-    });
+final RequestContext ctx = ...;
+ctx.log().whenComplete().thenAccept(log -> {
+    if (!log.children().isEmpty()) {
+        System.err.println("A request finished after " + log.children().size() + " attempt(s): " + log);
+    } else {
+        System.err.println("A request is done: " + log);
+    }
+});
 ```
 
 <type://RetryingClient> is a good example that leverages this feature.

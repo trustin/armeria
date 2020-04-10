@@ -70,9 +70,9 @@ provided by [Dropwizard](https://www.dropwizard.io/en/stable/manual/configuratio
 The following is a simple example for configuring the server:
 
 ```yaml
-    server:
-      type: armeria
-      applicationContextPath: /
+server:
+  type: armeria
+  applicationContextPath: /
 ```
 
 For a user who wants to utilize Armeria, an <type://ArmeriaBundle> implementation must be added to the
@@ -81,30 +81,30 @@ For a user who wants to utilize Armeria, an <type://ArmeriaBundle> implementatio
 The user can further customize the server outside of the `Configuration` as follows:
 
 ```java
-    public class DropwizardArmeriaApplication extends Application<DropwizardArmeriaConfiguration> {
+public class DropwizardArmeriaApplication extends Application<DropwizardArmeriaConfiguration> {
 
-        public static void main(final String[] args) throws Exception {
-            new DropwizardArmeriaApplication().run(args);
-        }
-
-        @Override
-        public void initialize(final Bootstrap<DropwizardArmeriaConfiguration> bootstrap) {
-            final ArmeriaBundle bundle = new ArmeriaBundle() {
-                @Override
-                public void configure(final ServerBuilder builder) {
-                    // Customize the server using the given ServerBuilder. For example:
-                    builder.service("/armeria", (ctx, res) -> HttpResponse.of("Hello, Armeria!"));
-
-                    builder.annotatedService(new HelloService());
-
-                    // You can also bind asynchronous RPC services such as Thrift and gRPC:
-                    // builder.service(THttpService.of(...));
-                    // builder.service(GrpcService.builder()...build());
-                }
-            };
-            bootstrap.addBundle(bundle);
-        }
+    public static void main(final String[] args) throws Exception {
+        new DropwizardArmeriaApplication().run(args);
     }
+
+    @Override
+    public void initialize(final Bootstrap<DropwizardArmeriaConfiguration> bootstrap) {
+        final ArmeriaBundle bundle = new ArmeriaBundle() {
+            @Override
+            public void configure(final ServerBuilder builder) {
+                // Customize the server using the given ServerBuilder. For example:
+                builder.service("/armeria", (ctx, res) -> HttpResponse.of("Hello, Armeria!"));
+
+                builder.annotatedService(new HelloService());
+
+                // You can also bind asynchronous RPC services such as Thrift and gRPC:
+                // builder.service(THttpService.of(...));
+                // builder.service(GrpcService.builder()...build());
+            }
+        };
+        bootstrap.addBundle(bundle);
+    }
+}
 ```
 
 <Tip>
@@ -124,54 +124,54 @@ Not all Dropwizard configurations can be passed into the Armeria server. Current
 </Warning>
 
 ```yaml
-    server:
-      type: armeria
-      gracefulShutdownQuietPeriodMillis: 5000
-      gracefulShutdownTimeoutMillis: 40000
-      maxRequestLength: 10485760
-      maxNumConnections: 2147483647
-      dateHeaderEnabled: true
-      serverHeaderEnabled: false
-      verboseResponses: false
-      defaultHostname: "host.name.com"
-      ports:
-        - port: 8080
-          protocol: HTTP
-        - ip: 127.0.0.1
-          port: 8081
-          protocol: HTTPS
-        - port: 8443
-          protocols:
-            - HTTPS
-            - PROXY
-              ports:
-      compression:
-        enabled: true
-        mimeTypes:
-          - text/*
-          - application/json
-        excludedUserAgents:
-          - some-user-agent
-          - another-user-agent
-        minResponseSize: 1KB
-      ssl:
-        keyAlias: "host.name.com"
-        keyStore: "classpath:keystore.jks"
-        keyStorePassword: "changeme"
-        trustStore: "classpath:truststore.jks"
-        trustStorePassword: "changeme"
-      http1:
-        maxChunkSize: 4096
-        maxInitialLineLength: 4096
-      http2:
-        initialConnectionWindowSize: 1MB
-        initialStreamWindowSize: 1MB
-        maxFrameSize: 16384
-        maxHeaderListSize: 8192
-      proxy:
-        maxTlvSize: 65319
-      accessLog:
-        type: common
+server:
+  type: armeria
+  gracefulShutdownQuietPeriodMillis: 5000
+  gracefulShutdownTimeoutMillis: 40000
+  maxRequestLength: 10485760
+  maxNumConnections: 2147483647
+  dateHeaderEnabled: true
+  serverHeaderEnabled: false
+  verboseResponses: false
+  defaultHostname: "host.name.com"
+  ports:
+    - port: 8080
+      protocol: HTTP
+    - ip: 127.0.0.1
+      port: 8081
+      protocol: HTTPS
+    - port: 8443
+      protocols:
+        - HTTPS
+        - PROXY
+          ports:
+  compression:
+    enabled: true
+    mimeTypes:
+      - text/*
+      - application/json
+    excludedUserAgents:
+      - some-user-agent
+      - another-user-agent
+    minResponseSize: 1KB
+  ssl:
+    keyAlias: "host.name.com"
+    keyStore: "classpath:keystore.jks"
+    keyStorePassword: "changeme"
+    trustStore: "classpath:truststore.jks"
+    trustStorePassword: "changeme"
+  http1:
+    maxChunkSize: 4096
+    maxInitialLineLength: 4096
+  http2:
+    initialConnectionWindowSize: 1MB
+    initialStreamWindowSize: 1MB
+    maxFrameSize: 16384
+    maxHeaderListSize: 8192
+  proxy:
+    maxTlvSize: 65319
+  accessLog:
+    type: common
 ```
 
 Where defined, the Armeria ServerFactory will prefer Armeria's default properties over Dropwizard's.
@@ -278,11 +278,11 @@ configuration.
 Use NCSA common log format.
 
 ```yaml
-    server:
-      type: armeria
-    armeria:
-      accessLog:
-        type: common
+server:
+  type: armeria
+armeria:
+  accessLog:
+    type: common
 ```
 
 ### `combined`
@@ -290,10 +290,10 @@ Use NCSA common log format.
 Use NCSA combined log format.
 
 ```yaml
-    server:
-      type: armeria
-      accessLog:
-        type: combined
+server:
+  type: armeria
+  accessLog:
+    type: combined
 ```
 
 ### `custom`
@@ -302,9 +302,9 @@ Use your own log format. Refer to [Customizing a log format](/docs/server-access
 for supported format tokens.
 
 ```yaml
-    server:
-      type: armeria
-      accessLog:
-        type: custom
-        format: "...log format..."
+server:
+  type: armeria
+  accessLog:
+    type: custom
+    format: "...log format..."
 ```

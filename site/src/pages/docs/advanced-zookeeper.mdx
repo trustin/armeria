@@ -4,10 +4,10 @@ You can put the list of available <typeplural://Endpoint> into a zNode in
 [Apache ZooKeeper](https://zookeeper.apache.org/) cluster as a node tree, like the following:
 
 ```yaml
-    # Note: Only child node values are used. i.e. Child node names are ignored.
-    - /myProductionEndpoints
-      - /192.168.1.10_8080: 192.168.1.10:8080
-      - /192.168.1.11_8080: 192.168.1.11:8080:100
+# Note: Only child node values are used. i.e. Child node names are ignored.
+- /myProductionEndpoints
+  - /192.168.1.10_8080: 192.168.1.10:8080
+  - /192.168.1.11_8080: 192.168.1.11:8080:100
 ```
 
 In the examples above, `192.168.1.10` and other IP strings are your servers' IP addresses, `8080` is a
@@ -16,22 +16,22 @@ service port number and `100` is a weight value. You can omit a weight value as 
 Create a <type://ZooKeeperEndpointGroup> to retrieve this information:
 
 ```java
-    import com.linecorp.armeria.client.endpoint.EndpointGroup;
-    import com.linecorp.armeria.client.zookeeper.ZooKeeperEndpointGroup;
+import com.linecorp.armeria.client.endpoint.EndpointGroup;
+import com.linecorp.armeria.client.zookeeper.ZooKeeperEndpointGroup;
 
-    EndpointGroup myEndpointGroup =
-            ZooKeeperEndpointGroup.builder(/* zkConnectionStr */ "myZooKeeperHost:2181",
-                                           /* zNodePath       */ "/myProductionEndpoints")
-                                  .customizer(builder ->  builder.sessionTimeoutMs(10000))
-                                  .build();
+EndpointGroup myEndpointGroup =
+        ZooKeeperEndpointGroup.builder(/* zkConnectionStr */ "myZooKeeperHost:2181",
+                                       /* zNodePath       */ "/myProductionEndpoints")
+                              .customizer(builder ->  builder.sessionTimeoutMs(10000))
+                              .build();
 ```
 
 And then specify it when you build a client:
 
 ```java
-    HelloService.Iface helloClient =
-            Clients.builder("tbinary+http", myEndpointGroup, "/hello")
-                   .build(HelloService.Iface.class);
+HelloService.Iface helloClient =
+        Clients.builder("tbinary+http", myEndpointGroup, "/hello")
+               .build(HelloService.Iface.class);
 ```
 
 For more information, please refer to the API documentation of the
@@ -42,16 +42,16 @@ For more information, please refer to the API documentation of the
 Use <type://ZooKeeperUpdatingListenerBuilder> to register your server to a ZooKeeper cluster:
 
 ```java
-    import com.linecorp.armeria.server.ServerListener;
-    import com.linecorp.armeria.server.zookeeper.ZooKeeperUpdatingListenerBuilder;
+import com.linecorp.armeria.server.ServerListener;
+import com.linecorp.armeria.server.zookeeper.ZooKeeperUpdatingListenerBuilder;
 
-    ZookeeperUpdatingListener listener =
-            ZooKeeperUpdatingListener.builder("myZooKeeperHost:2181", "/myProductionEndpoints")
-                                     .sessionTimeout(10000)
-                                     .build();
-    server.addListener(listener);
-    server.start();
-    ...
+ZookeeperUpdatingListener listener =
+        ZooKeeperUpdatingListener.builder("myZooKeeperHost:2181", "/myProductionEndpoints")
+                                 .sessionTimeout(10000)
+                                 .build();
+server.addListener(listener);
+server.start();
+...
 ```
 
 You can also use an existing
@@ -59,18 +59,18 @@ You can also use an existing
 instance instead of ZooKeeper connection string:
 
 ```java
-    import com.linecorp.armeria.server.ServerListener;
-    import com.linecorp.armeria.server.zookeeper.ZooKeeperUpdatingListenerBuilder;
-    import org.apache.curator.framework.CuratorFramework;
+import com.linecorp.armeria.server.ServerListener;
+import com.linecorp.armeria.server.zookeeper.ZooKeeperUpdatingListenerBuilder;
+import org.apache.curator.framework.CuratorFramework;
 
-    CuratorFramework client = ...
-    ZookeeperUpdatingListener listener =
-            ZooKeeperUpdatingListener.builder(client, "/myProductionEndpoints")
-                                     .nodeValueCodec(NodeValueCodec.DEFAULT)
-                                     .build();
-    server.addListener(listener);
-    server.start();
-    ...
+CuratorFramework client = ...
+ZookeeperUpdatingListener listener =
+        ZooKeeperUpdatingListener.builder(client, "/myProductionEndpoints")
+                                 .code(NodeValueCodec.ofDefault())
+                                 .build();
+server.addListener(listener);
+server.start();
+...
 ```
 
 When your server starts up, <type://ZooKeeperUpdatingListener> will register the server automatically to the

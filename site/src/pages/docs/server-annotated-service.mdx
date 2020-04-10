@@ -156,18 +156,17 @@ public class MyAnnotatedService {
 Let's see the example in the above section again.
 
 ```java
+public class MyAnnotatedService {
 
-    public class MyAnnotatedService {
+    @Get("/hello/{name}")
+    public HttpResponse pathvar(@Param("name") String name) { ... }
 
-        @Get("/hello/{name}")
-        public HttpResponse pathvar(@Param("name") String name) { ... }
+    @Get("regex:^/hello/(?<name>.*)$")
+    public HttpResponse regex(@Param("name") String name) { ... }
 
-        @Get("regex:^/hello/(?<name>.*)$")
-        public HttpResponse regex(@Param("name") String name) { ... }
-
-        @Get("glob:/*/hello/**")
-        public HttpResponse glob(@Param("0") String prefix, @Param("1") String name) { ... }
-    }
+    @Get("glob:/*/hello/**")
+    public HttpResponse glob(@Param("0") String prefix, @Param("1") String name) { ... }
+}
 ```
 
 A value of a parameter `name` is automatically injected as a `String` by Armeria.
@@ -284,13 +283,13 @@ no <type://@Param> value appears in the path pattern, Armeria will aggregate the
 decode its body as a URL-encoded form. After that, Armeria will inject the decoded value into the parameter.
 
 ```java
-    public class MyAnnotatedService {
-        @Post("/hello4")
-        public HttpResponse hello4(@Param("name") String name) {
-            // 'x-www-form-urlencoded' request will be aggregated. The other requests may get
-            // a '400 Bad Request' because there is no way to inject a mandatory parameter 'name'.
-        }
+public class MyAnnotatedService {
+    @Post("/hello4")
+    public HttpResponse hello4(@Param("name") String name) {
+        // 'x-www-form-urlencoded' request will be aggregated. The other requests may get
+        // a '400 Bad Request' because there is no way to inject a mandatory parameter 'name'.
     }
+}
 ```
 
 ### Getting an HTTP header
