@@ -143,6 +143,9 @@ final class DefaultFlagsProvider implements FlagsProvider {
 
     @Override
     public TransportType transportType() {
+        if (TransportType.IO_URING.isAvailable()) {
+            return TransportType.IO_URING;
+        }
         if (TransportType.EPOLL.isAvailable()) {
             return TransportType.EPOLL;
         }

@@ -145,15 +145,6 @@ public final class TransportTypeProvider {
                     new IllegalStateException("Failed to determine the shaded package name"));
         }
 
-        // TODO(trustin): Do not try to load io_uring unless explicitly specified so JVM doesn't crash.
-        //                https://github.com/netty/netty-incubator-transport-io_uring/issues/92
-        if ("IO_URING".equals(name) && !"io_uring".equals(Ascii.toLowerCase(
-                System.getProperty("com.linecorp.armeria.transportType", "")))) {
-            return new TransportTypeProvider(
-                    name, null, null, null, null, null, null, null, null,
-                    new IllegalStateException("io_uring not enabled explicitly"));
-        }
-
         try {
             // Make sure the native libraries were loaded.
             final Throwable unavailabilityCause = (Throwable)
