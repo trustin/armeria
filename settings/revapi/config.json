@@ -1,0 +1,61 @@
+[
+  {
+    "extension": "revapi.java",
+    "configuration": {
+      "missing-classes": {
+        "behavior": "ignore"
+      }
+    }
+  },
+  {
+    "extension": "revapi.differences",
+    "configuration": {
+      "ignore": true,
+      "differences": [
+        {
+          "regex": true,
+          "code": "java\\.method\\.(parameter|return)TypeErasureChanged",
+          "classQualifiedName": "com\\.linecorp\\.armeria\\.server\\.((Http|Rpc)ServiceWithRoutes|Transient(Http|Rpc)Service)",
+          "justification": "false positive"
+        },
+        {
+          "regex": true,
+          "code": "java\\.annotation\\.removed",
+          "classQualifiedName": "com\\.linecorp\\.armeria\\.server\\.(HttpServiceWithRoutes|TransientHttpService)",
+          "annotationType": "com\\.google\\.errorprone\\.annotations\\.CheckReturnValue",
+          "justification": "false positive"
+        },
+        {
+          "regex": true,
+          "code": "java\\.class\\.nonPublicPartOfAPI",
+          "classQualifiedName": "com\\.linecorp\\.armeria\\.common\\.CacheControlBuilder",
+          "justification": "false positive - all its public methods are overridden with public return type"
+        }
+      ]
+    }
+  },
+  {
+    "extension": "revapi.filter",
+    "configuration": {
+      "elements": {
+        "exclude": [
+          {
+            "matcher": "java-package",
+            "match": "/.*\\.internal\\..*/"
+          },
+          {
+            "matcher": "java",
+            "match": "@com.linecorp.armeria.common.annotation.UnstableApi ^*;"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "extension": "revapi.reporter.text",
+    "configuration": {
+      "minSeverity": "POTENTIALLY_BREAKING",
+      "output" : "out"
+    }
+  }
+]

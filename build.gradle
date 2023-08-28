@@ -1,6 +1,15 @@
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.revapi.API
+import org.revapi.AnalysisContext
+import org.revapi.Revapi
+import org.revapi.base.FileArchive
+import org.revapi.basic.ConfigurableElementFilter
+import org.revapi.basic.DifferencesTransform
+import org.revapi.java.JavaApiAnalyzer
+import org.revapi.java.matcher.JavaElementMatcher
+import org.revapi.reporter.text.TextReporter
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -12,6 +21,10 @@ import static java.lang.Math.min
 buildscript {
     dependencies {
         classpath libs.jsoup
+        classpath libs.revapi
+        classpath libs.revapi.basic.features
+        classpath libs.revapi.java
+        classpath libs.revapi.reporter.text
     }
 }
 
@@ -429,4 +442,100 @@ configure(relocatedProjects) {
             }
         }
     }
+}
+
+def publishedJavaProjects = projectsWithFlags('java', 'publish') as List<Project>
+publishedJavaProjects.removeAll(projectsWithFlags('no_apicompat') as List<Project>)
+def apiCompatBaseVersion = "${project.property("apiCompatBaseVersion")}"
+configure(publishedJavaProjects) {
+    configurations {
+        apiCompatBase {
+            transitive = false
+        }
+    }
+
+    dependencies {
+        apiCompatBase("${project.group}:${project.ext.artifactId}:${apiCompatBaseVersion}")
+    }
+
+    def revapiConfigFile = rootProject.file("settings/revapi/config.json")
+    tasks.register("testApiCompat") {
+        group = "Verification"
+        description = "Ensures the API backward compatibility"
+        dependsOn(tasks.named("jar"))
+
+        inputs.file(revapiConfigFile)
+        inputs.property("apiCompatVersion", apiCompatBaseVersion)
+        inputs.property("projectVersion", project.version)
+
+        doLast {
+            def semverRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)/
+            def apiCompatBaseVersionMatches = apiCompatBaseVersion =~ semverRegex
+            def projectVersionMatches = project.version =~ semverRegex
+            assert apiCompatBaseVersionMatches.find()
+            assert projectVersionMatches.find()
+
+            def isMajorBump = checkVersionBump(projectVersionMatches.group(1).toInteger(),
+                                               apiCompatBaseVersionMatches.group(1).toInteger())
+            def isMinorBump = !isMajorBump &&
+                              checkVersionBump(projectVersionMatches.group(2).toInteger(),
+                                               apiCompatBaseVersionMatches.group(2).toInteger())
+            def isMicroBump = !isMinorBump &&
+                              checkVersionBump(projectVersionMatches.group(3).toInteger(),
+                                               apiCompatBaseVersionMatches.group(3).toInteger())
+
+            assert isMajorBump || isMinorBump || isMicroBump :
+                    "project version (${project.version}) must not be equal to the API base version (${apiCompatBaseVersion})."
+
+
+            // Initialize the Revapi pipeline.
+            def revapi = Revapi.builder()
+                    .withAllExtensionsFrom(Revapi.class.classLoader)
+                    .withAllExtensionsFrom(DifferencesTransform.class.classLoader)
+                    .withAllExtensionsFrom(JavaApiAnalyzer.class.classLoader)
+                    .withAllExtensionsFrom(TextReporter.class.classLoader)
+                    .build()
+
+            // Make sure some important extensions were loaded as expected.
+            def pipelineCfg = revapi.pipelineConfiguration
+            assert pipelineCfg.apiAnalyzerTypes.contains(JavaApiAnalyzer.class)
+            assert pipelineCfg.reporterTypes.contains(TextReporter.class)
+            assert pipelineCfg.transformTypes.contains(DifferencesTransform.class)
+            assert pipelineCfg.treeFilterTypes.contains(ConfigurableElementFilter.class)
+            assert pipelineCfg.matcherTypes.contains(JavaElementMatcher.class)
+
+            def oldApiBuilder = API.builder()
+            configurations.getByName("apiCompatBase").resolve().each {
+                oldApiBuilder.addArchive(new FileArchive(it))
+            }
+            def newApiBuilder = API.builder()
+            def jarTask = tasks.getByName("jar") as Zip
+            newApiBuilder.addArchive(new FileArchive(jarTask.archiveFile.get().asFile))
+
+            def analysisContext = AnalysisContext.builder()
+                    .withOldAPI(oldApiBuilder.build())
+                    .withNewAPI(newApiBuilder.build())
+                    .withConfigurationFromJSON(new String(revapiConfigFile.readBytes(), "UTF-8")).build()
+
+            def result = revapi.analyze(analysisContext)
+            try {
+                result.throwIfFailed()
+            } finally {
+                result.close()
+            }
+        }
+    }
+}
+
+// Returns true if the given project version component is greater than the given base version component.
+// Returns false if they are equal to each other.
+// Throws an exception otherwise.
+static def checkVersionBump(int projectVersionComponent, int baseVersionComponent) {
+    if (projectVersionComponent > baseVersionComponent) {
+        return true
+    }
+    if (projectVersionComponent == baseVersionComponent) {
+        return false
+    }
+    throw new Exception("project version must be greater than the API base version.")
 }
