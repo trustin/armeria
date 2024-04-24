@@ -65,6 +65,9 @@ allprojects {
             systemProperties 'io.netty.leakDetectionLevel': 'paranoid'
             systemProperties 'io.netty.leakDetection.targetRecords': '256'
         }
+
+        // Enable io_uring by default (only effective in Linux kernel 5.1+)
+        systemProperties 'com.linecorp.armeria.transportType': 'io_uring'
     }
 
     tasks.withType(Test) {
